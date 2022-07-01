@@ -3,7 +3,7 @@
 
 ## Database Schema Design
 
-`<insert database schema design here>`
+![AirBnb](AirBnb.png)
 
 ## API Documentation
 
