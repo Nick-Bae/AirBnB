@@ -71,9 +71,6 @@ app.use((err,_req,res,_next)=>{
 });
 
 
-app.get('/',(req,res)=>{
-  res.send("hi hi")
-})
 
 
   module.exports = app;
