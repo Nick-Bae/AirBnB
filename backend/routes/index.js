@@ -20,7 +20,7 @@ const apiRouter = require('./api');
 router.use('/api', apiRouter);
 
 router.get('/',(req,res)=>{
-    res.send("hi")
+    res.send("API is running")
   })
-  
+
 module.exports = router;
