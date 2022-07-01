@@ -70,4 +70,10 @@ app.use((err,_req,res,_next)=>{
   });
 });
 
+
+router.get('/',(req,res)=>{
+  res.send("hi hi")
+})
+
+
   module.exports = app;
