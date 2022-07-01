@@ -71,7 +71,7 @@ app.use((err,_req,res,_next)=>{
 });
 
 
-router.get('/',(req,res)=>{
+app.get('/',(req,res)=>{
   res.send("hi hi")
 })
 
