@@ -46,7 +46,7 @@ router.delete(
       if (user) {
         return res.json(
           user.toSafeObject()
-        );
+           );
       } else return res.json({});
     }
   );
@@ -62,6 +62,7 @@ router.delete(
     handleValidationErrors
   ];
 
+  //log in a user
   router.post(
     '/',
     validateLogin,
@@ -81,8 +82,13 @@ router.delete(
       await setTokenCookie(res, user);
   
       return res.json({
-        user
-      });
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        token:req.csrfToken()
+      }
+        // user.toSafeObject()
+      );
     }
   );
 
