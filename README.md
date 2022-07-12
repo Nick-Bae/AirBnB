@@ -4,7 +4,6 @@
 ## Database Schema Design
 
 ![](AirBnb.png)
-
 ## API Documentation
 
 ## All endpoints that require authentication
@@ -97,8 +96,7 @@ information.
     ```json
     {
       "id": 1,
-      "firstName": "John",
-      "lastName": "Smith",
+      "username": "John Smith",
       "email": "john.smith@gmail.com",
       "token": ""
     }
@@ -149,8 +147,7 @@ user's information.
 
     ```json
     {
-      "firstName": "John",
-      "lastName": "Smith",
+      "username": "John Smith",
       "email": "john.smith@gmail.com",
       "password": "secret password"
     }
@@ -165,8 +162,7 @@ user's information.
     ```json
     {
       "id": 1,
-      "firstName": "John",
-      "lastName": "Smith",
+      "username": "John Smith",
       "email": "john.smith@gmail.com",
       "token": ""
     }

@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { setTokenCookie, requireAuth } = require('../../utils/auth');
+const { setTokenCookie, requireAuth,restoreUser } = require('../../utils/auth');
 const { User } = require('../../db/models');
 
 const router = express.Router();
@@ -29,18 +29,26 @@ const validateSignup = [
 router.post(
     '/',
     validateSignup,
-    async (req, res) => {
+    async (req, res, next) => {
       const { email, password, username } = req.body;
       const user = await User.signup({ email, username, password });
-  
-      await setTokenCookie(res, user);
-  
+      
+     
+      const token = setTokenCookie(res, user);
+      // const { token2 } = restoreUser();
+      // const { token } = req.csrfToken();
+      // console.log(token)
+      // setTokenCookie(res,user)
+      // const {token} = setTokenCookie()
+      console.log(res.cookie)
       return res.json({
-        user
+        id: user.id,
+        username: user.username,
+        email:user.email,
+        token: token
       });
     }
   );
 
-  
 
 module.exports = router;

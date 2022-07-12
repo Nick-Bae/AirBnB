@@ -85,7 +85,7 @@ router.delete(
         id: user.id,
         username: user.username,
         email: user.email,
-        token:req.csrfToken()
+        // token:token
       }
         // user.toSafeObject()
       );
