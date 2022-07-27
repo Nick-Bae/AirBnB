@@ -156,11 +156,13 @@ router.get('/:spotId', async (req, res) => {
 })
 
 //Create a Spot
-router.post('/', validateCreateSpot, async (req,res)=>{
-    const { ownerId,name, address,totalOccupancy,totalRooms,totalBathrooms,
+router.post('/', requireAuth, validateCreateSpot, async (req,res)=>{
+    const {user}= req;
+    
+    const { name, address,totalOccupancy,totalRooms,totalBathrooms,
         hasKitchen, hasAC, hasHeating, hasWifi,isPetAllowed, price}=req.body
     const newSpot = await Spot.create ({
-      ownerId,
+      ownerId: user.id,
       name,
       address,
       totalOccupancy,
@@ -177,33 +179,41 @@ router.post('/', validateCreateSpot, async (req,res)=>{
 })
 
 //Edit a Spot
-router.put('/:spotId', validateCreateSpot,async(req,res)=>{
-    try {
-        const { name, address,totalOccupancy,totalRooms,totalBathrooms,
-            hasKitchen, hasAC, hasHeating, hasWifi,isPetAllowed, price}=req.body
-        const editSpot = await Spot.findByPk(req.params.spotId) 
-        editSpot.update({
-          name,
-          address,
-          totalOccupancy,
-          totalRooms,
-          totalBathrooms,
-          hasKitchen,
-          hasAC,
-          hasHeating,
-          hasWifi,
-          isPetAllowed,
-          price,
-        })
-        res.status(200)
-        res.json(editSpot)
-    } catch(err){
-        res.status(404)
-        res.json({
-            "message": "Spot couldn't be found",
-            "statusCode": 404
-        })
-    }
+router.put('/:spotId',requireAuth, validateCreateSpot,async(req,res)=>{
+    const {user}=req;
+    const spot = await Spot.findByPk(req.params.spotId)
+    // try {
+        if (!spot){
+            res.status(404)
+            res.json({
+                "message": "Spot couldn't be found",
+                "statusCode": 404
+            })
+        } else if (user.id === parseInt(spot.ownerId)) {
+            const { name, address,totalOccupancy,totalRooms,totalBathrooms,
+                hasKitchen, hasAC, hasHeating, hasWifi,isPetAllowed, price}=req.body
+            const editSpot = await Spot.findByPk(req.params.spotId) 
+            editSpot.update({
+              ownerId: user.id,
+              name,
+              address,
+              totalOccupancy,
+              totalRooms,
+              totalBathrooms,
+              hasKitchen,
+              hasAC,
+              hasHeating,
+              hasWifi,
+              isPetAllowed,
+              price,
+            })
+            res.status(200)
+            res.json(editSpot)
+        } else {
+            res.status(403).json("No permission")
+        }
+    // } catch(err){
+    // }
 })
 //Delete a Spot
 router.delete('/:spotId', async(req,res)=>{

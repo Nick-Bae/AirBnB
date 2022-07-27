@@ -1,11 +1,12 @@
 const express = require('express');
 
 const { setTokenCookie, restoreUser } = require('../../utils/auth');
-const { User } = require('../../db/models');
+const { User, Owner } = require('../../db/models');
 
 const router = express.Router();
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
+const owner = require('../../db/models/owner');
 // router.post(
 //     '/',
 //     async (req, res, next) => {
@@ -69,9 +70,10 @@ router.delete(
     async (req, res, next) => {
       const { credential, password } = req.body;
   
+      const owner = await Owner.login({credential, password});
       const user = await User.login({ credential, password });
   
-      if (!user) {
+      if (!user && !owner) {
         const err = new Error('Login failed');
         err.status = 401;
         err.title = 'Login failed';
@@ -80,15 +82,24 @@ router.delete(
       }
   
       const token = setTokenCookie(res, user);
-  
+     if (user){
+       return res.json({
+         id: user.id,
+         username: user.username,
+         email: user.email,
+         // token: token
+       }
+         // user.toSafeObject()
+       );
+     }
+     if (owner){
       return res.json({
-        id: user.id,
-        username: user.username,
-        email: user.email,
+        id: owner.id,
+        username: owner.username,
+        email: owner.email,
         // token: token
-      }
-        // user.toSafeObject()
-      );
+      })
+     }
     }
   );
 

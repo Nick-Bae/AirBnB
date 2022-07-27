@@ -54,10 +54,8 @@ router.post(
 // Get all Spots owned by the Current User
 router.get('/currentUser/spots', async (req, res) => {
   const { user } = req;
-  const currentUser = user.toSafeObject()
-  
   const spotUserId = await Reservation.findAll({
-    where: { userId: currentUser.id },
+    where: { userId: user.id },
     attributes: ['spotId'],
     include: [{ model: Spot, attributes:{exclude: ['image',"createdAt", "updatedAt"]}}]
     // include: [{ model: Spot}]
@@ -69,10 +67,9 @@ router.get('/currentUser/spots', async (req, res) => {
 //Get all Reviews of the Current User
 router.get('/currentUser/reviews', restoreUser, async (req, res) => {
   const { user } = req;
-  const currentUser = user.toSafeObject()
 
   const reviews = await Review.findAll({
-    where: { userId: currentUser.id },
+    where: { userId: user.id },
     include: [{ model: User }, { model: Spot }],
   })
   res.json(reviews)

@@ -16,6 +16,10 @@ module.exports = {
       //   references: {model: 'Spots'},
       //   onDelete: 'CASCADE'
       // },
+      hashedPassword: {
+        type: Sequelize.STRING.BINARY,
+        allowNull: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
