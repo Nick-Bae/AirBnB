@@ -11,25 +11,78 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // Spot.hasMany(models.Reservation, {foreignKey: 'spotId',onDelete: 'CASCADE', hooks:true}),
+      Spot.hasMany(models.Review, {foreignKey:'spotId'})
+      Spot.belongsTo(models.User, {foreignKey:'userId'} )
+      Spot.belongsTo(models.Owner, {foreignKey:'ownerId'})
     }
   }
   Spot.init({
-    name: DataTypes.STRING,
-    address: DataTypes.STRING,
-    host_id: DataTypes.INTEGER,
-    total_occupancy: DataTypes.INTEGER,
-    total_rooms: DataTypes.INTEGER,
-    total_bathrooms: DataTypes.INTEGER,
-    has_kitchen: DataTypes.BOOLEAN,
-    has_AC: DataTypes.BOOLEAN,
-    has_heating: DataTypes.BOOLEAN,
-    has_wifi: DataTypes.BOOLEAN,
-    isPetAllowed: DataTypes.BOOLEAN,
-    price: DataTypes.INTEGER,
-    review_id: DataTypes.INTEGER
+    ownerId:{
+      type:DataTypes.INTEGER,
+      allowNull:false
+    },
+    name: {
+      type:DataTypes.STRING,
+      allowNull:false,
+      // unique: true
+    },
+    address: {
+      type:
+      DataTypes.STRING,
+      allowNull:false
+    },
+    userId: {
+      type:DataTypes.INTEGER,
+        // allowNull:false
+      },
+    totalOccupancy: {
+      type:DataTypes.INTEGER,
+        allowNull:false
+      },
+    totalRooms: {
+      type:DataTypes.INTEGER,
+        allowNull:false
+      },
+    totalBathrooms: {
+      type:DataTypes.INTEGER,
+        allowNull:false
+      },
+    hasKitchen: {
+      type:DataTypes.BOOLEAN,
+        allowNull:false
+      },
+    hasAC: {
+      type:DataTypes.BOOLEAN,
+        allowNull:false
+      },
+    hasHeating: {
+      type:DataTypes.BOOLEAN,
+        allowNull:false
+      },
+    hasWifi: {
+      type:DataTypes.BOOLEAN,
+        allowNull:false
+      },
+    isPetAllowed: {
+      type:DataTypes.BOOLEAN,
+        allowNull:false
+      },
+    price: {
+      type:DataTypes.INTEGER,
+        allowNull:false
+      },
+    image: {
+      type:DataTypes.STRING
+    }
   }, {
     sequelize,
     modelName: 'Spot',
+    defaultScope: {
+      attributes: {
+        exclude: ["createdAt", "updatedAt"]
+      }
+    }
   });
   return Spot;
 };

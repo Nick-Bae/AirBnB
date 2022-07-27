@@ -47,14 +47,14 @@ router.delete(
         return res.json(
           user.toSafeObject()
            );
-      } else return res.json({});
+      } else return res.json("No logg in user");
     }
   );
 
   const validateLogin = [
     check('credential')
       .exists({ checkFalsy: true })
-      .notEmpty()
+      // .notEmpty()
       .withMessage('Please provide a valid email or username.'),
     check('password')
       .exists({ checkFalsy: true })
@@ -79,13 +79,13 @@ router.delete(
         return next(err);
       }
   
-      await setTokenCookie(res, user);
+      const token = setTokenCookie(res, user);
   
       return res.json({
         id: user.id,
         username: user.username,
         email: user.email,
-        // token:token
+        // token: token
       }
         // user.toSafeObject()
       );

@@ -2,6 +2,8 @@ const router = require('express').Router();
 const sessionRouter = require('./session.js');
 const usersRouter = require('./users.js');
 const spotRouter = require('./spots.js');
+const reviewRouter = require('./review.js');
+const reservationRouter = require('./reservation.js')
 const { restoreUser,setTokenCookie } = require("../../utils/auth.js");
 
 router.post('/test', function (req, res) {
@@ -37,7 +39,11 @@ router.use('/session', sessionRouter);
 
 router.use('/users', usersRouter);
 
-router.use('/spot', spotRouter);
+router.use('/spots', spotRouter);
+
+router.use('/reviews', reviewRouter);
+
+router.use('/reservations', reservationRouter);
 
 router.post('/test', (req, res) => {
   res.json({ requestBody: req.body });

@@ -194,11 +194,10 @@ user's information.
     {
       "message": "Validation error",
       "statusCode": 400,
-      "errors": {
-        "email": "Invalid email",
-        "firstName": "First Name is required",
-        "lastName": "Last Name is required"
-      }
+      "errors": [
+        "Please provide a valid email.",
+        "Please provide a username with at least 4 characters."
+      ]
     }
     ```
 
@@ -249,6 +248,8 @@ Returns all the spots owned (created) by the current user.
 * Request
   * Method: GET
   * URL: /api/spot/:userid
+        /api/user/:userId/spots 
+        /api/spot/user/:userId
   * Body: none
 
 * Successful Response
@@ -286,7 +287,7 @@ Returns the details of a spot specified by its id.
 * Require Authentication: false
 * Request
   * Method: GET
-  * URL: /api/spot/:userid/reviews
+  * URL: /api/spotId
   * Body: none
 
 * Successful Response

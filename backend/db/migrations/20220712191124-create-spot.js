@@ -8,44 +8,62 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      ownerId: {
+        type: Sequelize.INTEGER,
+        allowNull:false,
+        references: {model: 'Owners'}
+      },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull:false,
+        unique: true
       },
       address: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull:false
       },
-      host_id: {
-        type: Sequelize.INTEGER
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {model:'Users'},
+        // allowNull:false
       },
-      total_occupancy: {
-        type: Sequelize.INTEGER
+      totalOccupancy: {
+        type: Sequelize.INTEGER,
+        allowNull:false
       },
-      total_rooms: {
-        type: Sequelize.INTEGER
+      totalRooms: {
+        type: Sequelize.INTEGER,
+        allowNull:false
       },
-      total_bathrooms: {
-        type: Sequelize.INTEGER
+      totalBathrooms: {
+        type: Sequelize.INTEGER,
+        allowNull:false
       },
-      has_kitchen: {
+      hasKitchen: {
         type: Sequelize.BOOLEAN
       },
-      has_AC: {
-        type: Sequelize.BOOLEAN
+      hasAC: {
+        type: Sequelize.BOOLEAN,
+        allowNull:false
       },
-      has_heating: {
-        type: Sequelize.BOOLEAN
+      hasHeating: {
+        type: Sequelize.BOOLEAN,
+        allowNull:false
       },
-      has_wifi: {
-        type: Sequelize.BOOLEAN
+      hasWifi: {
+        type: Sequelize.BOOLEAN,
+        allowNull:false
       },
       isPetAllowed: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        allowNull:false
       },
       price: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull:false
       },
-      review_id: {
-        type: Sequelize.INTEGER
+      image: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

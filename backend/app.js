@@ -62,11 +62,12 @@ app.use((err, _req,_res, next) => {
           "email": `User with that ${err.errors[0].path} already exists`
         }
       })
-      
-    } else {
-
       err.errors = err.errors.map((e)=> e.message);
+      err.status
       err.title = 'validation error';
+      
+    // } else {
+
     }
   }
   next(err);
@@ -76,10 +77,11 @@ app.use((err,_req,res,_next)=>{
   res.status(err.status || 500);
   console.error(err);
   res.json({
-    title: err.title || 'Server Error',
+    // title: err.title || 'Server Error',
     message: err.message,
+    statusCode:err.status,
     errors: err.errors,
-    stack: isProduction ? null : err.stack
+    // stack: isProduction ? null : err.stack
   });
 });
 
