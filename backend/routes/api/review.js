@@ -1,7 +1,7 @@
 const express = require('express');
 
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
-const { User, Spot, Reservation, Review, sequelize } = require('../../db/models');
+const { User, Spot, Reservation, Review, sequelize, Image } = require('../../db/models');
 
 const router = express.Router();
 const { check } = require('express-validator');
@@ -111,5 +111,36 @@ router.delete('/:reviewId', requireAuth, async (req, res) => {
        } else {
         res.status(401).json("Unauthorized User")
        }
+})
+
+// Add an Image to a Review based on the Review's id
+router.post('/:reviewId/image', async (req, res)=>{
+    const {user} = req;
+    const {url} = req.body;
+    const review = await Review.findByPk(req.params.reviewId);
+    const countReview = await Image.count({
+      col: 'spotId'
+    })
+    res.json(countReview)
+
+    if (!review){
+        res.json({
+            "message": "Review couldn't be found",
+            "statusCode": 404
+          })
+    } else if (user === null || user.id !== parseInt(review.userId)) {
+        res.status(403).json("No permission")
+    } else {
+        const addReviewImage = await Image.create({
+            reviewId: req.params.reviewId,
+            type: "Review",
+            url
+        })
+        res.json({
+            id:addReviewImage.id,
+            imageableType: addReviewImage.type,
+            url:addReviewImage.url
+        })
+    }
 })
 module.exports = router;

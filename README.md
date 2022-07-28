@@ -1184,7 +1184,7 @@ Create and return a new image for a review specified by id.
 * Require proper authorization: Review must belong to the current user
 * Request
   * Method: PUT
-  * URL: /api/image/review/:reviewId
+  * URL: /api/review/:reviewId/image
   * Headers:
     * Content-Type: application/json
   * Body:

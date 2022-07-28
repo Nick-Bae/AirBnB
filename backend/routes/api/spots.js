@@ -257,17 +257,17 @@ router.post('/:spotId/image', async (req, res) => {
             "statusCode": 404
         })
     } else if (user === null || user.id !== parseInt(spot.ownerId)){
-        res.json("No Permission")
+        res.status(403).json("No Permission")
     } else {
         const newImage = await Image.create({
             // imageableId,
-            imageableType: "Spot",
+            spotId: req.params.spotId,
+            type: "Spot",
             url,
-            spotId: req.params.spotId
         })
         res.json({
             id:newImage.id, 
-            imageableType:newImage.imageableType, 
+            imageableType:newImage.type, 
             url:newImage.url
         });
     } 
