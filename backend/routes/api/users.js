@@ -52,7 +52,7 @@ router.post(
 );
 
 // Get all Spots owned by the Current User
-router.get('/currentUser/spots', async (req, res) => {
+router.get('/currentUser/spots', restoreUser, async (req, res) => {
   const { user } = req;
   const spotUserId = await Reservation.findAll({
     where: { userId: user.id },

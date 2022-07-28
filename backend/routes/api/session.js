@@ -7,28 +7,6 @@ const router = express.Router();
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 const owner = require('../../db/models/owner');
-// router.post(
-//     '/',
-//     async (req, res, next) => {
-//         const { credential, password } = req.body;
-
-//         const user = await User.login({ credential, password });
-
-//         if (!user) {
-//             const err = new Error('Login failed');
-//             err.status = 401;
-//             err.title = 'Login failed';
-//             err.errors = ['The provided credentials were invalid.'];
-//             return next(err);
-//         }
-
-//         await setTokenCookie(res, user);
-
-//         return res.json({
-//             user
-//         });
-//     }
-// );
 
 router.delete(
     '/',
@@ -70,10 +48,10 @@ router.delete(
     async (req, res, next) => {
       const { credential, password } = req.body;
   
-      const owner = await Owner.login({credential, password});
+      // const owner = await Owner.login({credential, password});
       const user = await User.login({ credential, password });
   
-      if (!user && !owner) {
+      if (!user) {
         const err = new Error('Login failed');
         err.status = 401;
         err.title = 'Login failed';
@@ -92,14 +70,14 @@ router.delete(
          // user.toSafeObject()
        );
      }
-     if (owner){
-      return res.json({
-        id: owner.id,
-        username: owner.username,
-        email: owner.email,
-        // token: token
-      })
-     }
+    //  if (owner){
+    //   return res.json({
+    //     id: owner.id,
+    //     username: owner.username,
+    //     email: owner.email,
+    //     // token: token
+    //   })
+    //  }
     }
   );
 

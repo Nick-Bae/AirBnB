@@ -22,7 +22,7 @@ module.exports = {
         hasWifi: true,
         isPetAllowed: false,
         price: 300,
-        image: 'https://images.app.goo.gl/iJnnVeTXiTXu9FGb6',
+        // image: 'https://images.app.goo.gl/iJnnVeTXiTXu9FGb6',
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -39,7 +39,7 @@ module.exports = {
         hasWifi: true,
         isPetAllowed: true,
         price: 600,
-        image: 'https://images.app.goo.gl/LTFk2JmJ1LHuGvgo9',
+        // image: 'https://images.app.goo.gl/LTFk2JmJ1LHuGvgo9',
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -56,7 +56,7 @@ module.exports = {
         hasWifi: true,
         isPetAllowed: false,
         price: 500,
-        image:'https://images.app.goo.gl/6UvjgwTV2cySoer88',
+        // image:'https://images.app.goo.gl/6UvjgwTV2cySoer88',
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -73,7 +73,7 @@ module.exports = {
         hasWifi: true,
         isPetAllowed: false,
         price: 900,
-        image: 'https://images.app.goo.gl/LgkqSUhfahfi3sB29',
+        // image: 'https://images.app.goo.gl/LgkqSUhfahfi3sB29',
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -90,7 +90,7 @@ module.exports = {
         hasWifi: false,
         isPetAllowed: false,
         price: 800,
-        image:'https://images.app.goo.gl/JaumvRr9qfhpo8v97',
+        // image:'https://images.app.goo.gl/JaumvRr9qfhpo8v97',
         createdAt: new Date(),
         updatedAt: new Date()
       }

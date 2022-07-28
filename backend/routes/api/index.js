@@ -25,6 +25,7 @@ router.get('/set-token-cookie', async (_req, res) => {
 const { requireAuth } = require('../../utils/auth.js');
 
 router.use(restoreUser);
+// router.use(requireAuth);
 
 router.get(
   '/require-auth',
