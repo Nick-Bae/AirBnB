@@ -263,7 +263,7 @@ router.post('/:spotId/image', async (req, res) => {
             // imageableId,
             spotId: req.params.spotId,
             type: "Spot",
-            url,
+            url
         })
         res.json({
             id:newImage.id, 
