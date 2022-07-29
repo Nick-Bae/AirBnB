@@ -44,7 +44,7 @@ router.get('/spot/:spotId', async (req, res) => {
 })
 
 //Create a Review for a Spot based on the Spot's id
-router.post('/spot/:spotId/user/:userId', validateReview, async (req, res) => {
+router.post('/spot/:spotId/reviews', requireAuth, validateReview, async (req, res) => {
 
     try {
         const isUserReview = await Review.findOne({

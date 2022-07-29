@@ -128,7 +128,7 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
 
 })
 
-//Get details of a Spot from an id
+//Get details of a Spot from an id (56:23)
 router.get('/:spotId', async (req, res) => {
     const detail = await Spot.findByPk(req.params.spotId, {
         attributes: {
