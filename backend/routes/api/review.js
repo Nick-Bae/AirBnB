@@ -119,9 +119,8 @@ router.post('/:reviewId/image', async (req, res)=>{
     const {url} = req.body;
     const review = await Review.findByPk(req.params.reviewId);
     const countReview = await Image.count({
-      col: 'spotId'
+    //   col: 'spotId'
     })
-    res.json(countReview)
 
     if (!review){
         res.json({
@@ -132,15 +131,17 @@ router.post('/:reviewId/image', async (req, res)=>{
         res.status(403).json("No permission")
     } else {
         const addReviewImage = await Image.create({
-            reviewId: req.params.reviewId,
-            type: "Review",
+            imageableId: user.id,
+            imageableType: "Review",
             url
         })
-        res.json({
-            id:addReviewImage.id,
-            imageableType: addReviewImage.type,
-            url:addReviewImage.url
-        })
+        res.json(
+            // id:addReviewImage.id,
+            // imageableId: 
+            // imageableType: addReviewImage.type,
+            // url:addReviewImage.url
+            addReviewImage
+        )
     }
 })
 module.exports = router;
