@@ -32,7 +32,7 @@ const validateCreateSpot = [
         .withMessage('Longitude is not valid'),
     check('name')
         .exists({ checkFalsy: true })
-        .isLength({max:50})
+        .isLength({ max: 50 })
         .withMessage('Name must be less than 50 characters'),
     check('description')
         .exists({ checkNull: true })
@@ -108,9 +108,6 @@ router.get('/current', requireAuth, async (req, res) => {
         ]
     })
 
-    const image = await Image.findOne({
-        where: {spotId: spo}
-    })
     // const spots = Spots.map(spot => spot)
     res.json({ Spots })
 })
@@ -160,29 +157,41 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
 
 //Get details of a Spot from an id (56:23)
 router.get('/:spotId', async (req, res) => {
-   
-    const detail = await Spot.findByPk(req.params.spotId, {
+
+    let detail = await Spot.findByPk(req.params.spotId)
+
+    // res.json(detail)
+    const revAvg = await Review.findAll({
+        where: { spotId: req.params.spotId },
         attributes: {
             include: [
-                [sequelize.fn('COUNT', sequelize.col("Reviews.review")), "numReviews"],
-                [sequelize.fn('AVG', sequelize.col("Reviews.stars")), "avgRating"]
+                [sequelize.fn('COUNT', sequelize.col("review")), "numReviews"],
+                [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
             ]
         },
-        include: [
-            { model: Review, attributes: [] },
-            // { model:Image},
-            // { model: Image, as: 'Images', attributes: ['id', 'url']},
-            { model: User, as: 'Owner', attributes: ['id','firstName','lastName'] },
-        ],
     })
-  
     const image = await Image.findOne({
-        where: {spotId: req.params.spotId}
+        where: { spotId: req.params.spotId },
+        atrributes: { exclude: ['previewImage', 'spotId', 'reviewId', 'userId'] }
     })
+    res.json(image)
+    const owner = await User.findOne({
+        where: { id: detail.ownerId },
+        attributes: { exclude: ['username'] }
+    })
+    let response = {
+        id: detail.id, ownerId: detail.ownerId,
+        address: detail.address, city: detail.city,
+        state: detail.state, country: detail.country,
+        lat: detail.lat, lng: detail.lng, name: detail.name,
+        description: detail.description, price: detail.price,
+        createAt: detail.createAt, updateAt: detail.updateAt,
+        avgRating: revAvg[0].dataValues.avgRating,
+        Images: detail = [image],
+        Owner: detail = owner,
+    }
+    res.json(response)
 
-  detail.test = 'bae'
-   
-    res.json(detail)
     if (!detail || detail.id === null) {
         res.status(404)
         res.json({
@@ -190,16 +199,7 @@ router.get('/:spotId', async (req, res) => {
             "statusCode": 404
         })
     } else {
-        // res.json({
-            // id: detail.id, ownerId: detail.ownerId,
-            // address:detail.address, city: detail.city,
-            // state:detail.state , country:detail.country ,
-            // lat:detail.lat , lng:detail.lng , name:detail.name ,
-            // description:detail.description , price:detail.price ,
-            // createAt:detail.createAt , updateAt:detail.updateAt ,
-            // numReviews:detail.numReviews , avgStarRating:detail.avgStarRating ,
-            // image: [{id: image.id}]})
-        detail
+        res.json(detail)
     }
 })
 
@@ -210,15 +210,15 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
     const { address, city, state, country,
         lat, lng, name, description, price } = req.body
     const newSpot = await Spot.create({
-        ownerId:user.id,
-        address, 
-        city, 
-        state, 
+        ownerId: user.id,
+        address,
+        city,
+        state,
         country,
-        lat, 
-        lng, 
-        name, 
-        description, 
+        lat,
+        lng,
+        name,
+        description,
         price
     })
     res.status(201).json(newSpot)
@@ -227,7 +227,7 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
 //============== Add an Image to a Spot based on the Spot's id
 router.post('/:spotId/image', requireAuth, async (req, res) => {
     const { user } = req
-    const {url}=req.body
+    const { url } = req.body
     const spot = await Spot.findByPk(req.params.spotId);
     if (!spot) {
         res.json({

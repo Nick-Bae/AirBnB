@@ -3,7 +3,7 @@
 ## Database Schema Design
 
 ![airbnb-database-schema](../assets/airbnb_dbdiagram.png)
-
+![](airbnb_dbdiagram.png)
 ## API Documentation
 
 ## USER AUTHENTICATION/AUTHORIZATION
