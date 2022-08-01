@@ -45,7 +45,7 @@ router.use('/spots', spotRouter);
 
 router.use('/reviews', reviewRouter);
 
-router.use('/reservations', reservationRouter);
+router.use('/bookings', reservationRouter);
 
 router.use('/images', imageRouter);
 

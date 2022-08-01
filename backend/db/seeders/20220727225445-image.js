@@ -7,7 +7,14 @@ module.exports = {
      *
      * Example:
      */
-  //   await queryInterface.bulkInsert('Images', [
+    await queryInterface.bulkInsert('Images', [
+      {
+        url: "https://images.app.goo.gl/9jozT6bUwgupPMkT8",
+        previewImage: true,
+        spotId: 1,
+        reviewId:1 ,
+        userId:1
+      }
   //     {
   //     spotId: 1,
   //     reviewId: 1,
@@ -59,7 +66,7 @@ module.exports = {
   //     url: "https://images.app.goo.gl/JaumvRr9qfhpo8v97"
   //   },
 
-  // ], {});
+  ], {});
   },
 
   async down (queryInterface, Sequelize) {

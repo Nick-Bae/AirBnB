@@ -20,20 +20,22 @@ module.exports = {
         allowNull:false,
         references: {model: 'Spots'},
       },
-      comment: {
+      review: {
         type: Sequelize.STRING
       },
-      rating: {
+      stars: {
         type: Sequelize.DECIMAL,
         // defaultValue:0
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: new Date()
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: new Date()
       }
     });
   },

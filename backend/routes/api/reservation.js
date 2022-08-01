@@ -1,7 +1,7 @@
 const express = require('express');
 
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
-const { User, Spot, Reservation, Review, sequelize } = require('../../db/models');
+const { User, Spot, Booking, Review, sequelize } = require('../../db/models');
 
 const router = express.Router();
 const {Op}=require("sequelize")
@@ -37,7 +37,7 @@ router.get('/spot/:spotId', async(req, res)=>{
     //           }
     //     )
     // }
-    const reservations = await Reservation.findAll({
+    const reservations = await Booking.findAll({
                 where : {spotId: req.params.spotId}
             })
 
@@ -61,7 +61,7 @@ router.post('/spot/:spotId/user/:userId', async(req, res)=>{
                 "message": "Spot couldn't be found",
                 "statusCode": 404
         })
-        const reservInSpot = await Reservation.findAll({
+        const reservInSpot = await Booking.findAll({
             where: {
                 spotId: spotId,
                 [Op.or]: [
@@ -91,7 +91,7 @@ router.post('/spot/:spotId/user/:userId', async(req, res)=>{
                   }
             )
         } else {
-            const newBooking = await Reservation.create({
+            const newBooking = await Booking.create({
                 spotId: req.params.spotId,
                 userId: req.params.userId,
                 checkIn,checkOut
@@ -109,7 +109,7 @@ router.post('/spot/:spotId/user/:userId', async(req, res)=>{
 //Edit a Booking
 router.put('/:reservationId', async(req, res)=>{
     const {checkIn,checkOut} = req.body
-    const editBooking = await Reservation.findByPk(req.params.reservationId)
+    const editBooking = await Booking.findByPk(req.params.reservationId)
 
     editBooking.update({
         checkIn, checkOut
@@ -129,7 +129,7 @@ router.put('/:reservationId', async(req, res)=>{
 //Delete a Booking
 router.delete('/:reservationId', async(req,res)=>{
     try{
-    const date = await Reservation.findByPk(req.params.reservationId, {
+    const date = await Booking.findByPk(req.params.reservationId, {
     })
     let today = new Date().toISOString().slice(0,10)
     if (date.checkIn < today){
@@ -139,7 +139,7 @@ router.delete('/:reservationId', async(req,res)=>{
         })
     } else {
 
-        const deleteBook = await Reservation.findByPk(req.params.reservationId)
+        const deleteBook = await Booking.findByPk(req.params.reservationId)
         deleteBook.destroy()
         res.status(200)
             res.json({

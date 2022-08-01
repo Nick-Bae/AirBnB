@@ -10,17 +10,45 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      // Spot.hasMany(models.Reservation, {foreignKey: 'spotId',onDelete: 'CASCADE', hooks:true}),
+      Spot.belongsTo(models.User, {as: 'Owner'}, {foreignKey:'ownerId'})
+      Spot.hasMany(models.Booking, {foreignKey:'spotId'})
       Spot.hasMany(models.Review, {foreignKey:'spotId'})
-      Spot.hasMany(models.Image, {as:'previewImage'}, {foreignKey:'imageableId'})
-      Spot.belongsTo(models.User, {foreignKey:'userId'} )
-      Spot.belongsTo(models.Owner, {foreignKey:'ownerId'})
+      Spot.hasMany(models.Image, {as: 'previewImage'},{foreignKey:'spotId'})
     }
-  }
+  };
   Spot.init({
     ownerId:{
       type:DataTypes.INTEGER,
+      allowNull:false
+    },
+    address: {
+      type:
+      DataTypes.STRING,
+      allowNull:false
+    },
+    city: {
+      type:
+      DataTypes.STRING,
+      allowNull:false
+    },
+    state: {
+      type:
+      DataTypes.STRING,
+      allowNull:false
+    },
+    country: {
+      type:
+      DataTypes.STRING,
+      allowNull:false
+    },
+    lat: {
+      type:
+      DataTypes.DECIMAL,
+      allowNull:false
+    },
+    lng: {
+      type:
+      DataTypes.DECIMAL,
       allowNull:false
     },
     name: {
@@ -28,62 +56,22 @@ module.exports = (sequelize, DataTypes) => {
       allowNull:false,
       // unique: true
     },
-    address: {
-      type:
-      DataTypes.STRING,
+    description: {
+      type: DataTypes.STRING,
       allowNull:false
     },
-    userId: {
-      type:DataTypes.INTEGER,
-        // allowNull:false
-      },
-    totalOccupancy: {
-      type:DataTypes.INTEGER,
-        allowNull:false
-      },
-    totalRooms: {
-      type:DataTypes.INTEGER,
-        allowNull:false
-      },
-    totalBathrooms: {
-      type:DataTypes.INTEGER,
-        allowNull:false
-      },
-    hasKitchen: {
-      type:DataTypes.BOOLEAN,
-        allowNull:false
-      },
-    hasAC: {
-      type:DataTypes.BOOLEAN,
-        allowNull:false
-      },
-    hasHeating: {
-      type:DataTypes.BOOLEAN,
-        allowNull:false
-      },
-    hasWifi: {
-      type:DataTypes.BOOLEAN,
-        allowNull:false
-      },
-    isPetAllowed: {
-      type:DataTypes.BOOLEAN,
-        allowNull:false
-      },
     price: {
-      type:DataTypes.INTEGER,
-        allowNull:false
-      },
-    // image: {
-    //   type:DataTypes.STRING
-    // }
+      type: DataTypes.INTEGER,
+      allowNull:false
+    },
   }, {
     sequelize,
     modelName: 'Spot',
-    defaultScope: {
-      attributes: {
-        exclude: ["createdAt", "updatedAt"]
-      }
-    }
+    // defaultScope: {
+    //   attributes: {
+    //     exclude: ["createdAt", "updatedAt"]
+    //   }
+    // }
   });
   return Spot;
 };

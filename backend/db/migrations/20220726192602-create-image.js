@@ -8,27 +8,36 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      // spotId: {
-      //   type: Sequelize.INTEGER,
-      //   onDelete: 'CASCADE',
-      //   references: {model:'Spots'}
-      // },
-      // reviewId: {
-      //   type: Sequelize.INTEGER,
-      //   onDelete: 'CASCADE',
-      //   references: {model:'Reviews'}
-      // },
-      imageableId: {
-        type: Sequelize.INTEGER,
-        references: {model:'Spots'},
-        references: {model:'Reviews'}
-      },
-      imageableType:{
-        type: Sequelize.STRING
-      },
       url: {
         type: Sequelize.STRING
       },
+      previewImage: {
+        type: Sequelize.BOOLEAN
+      },
+      spotId: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {model:'Spots'}
+      },
+      reviewId: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {model:'Reviews'}
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {model: 'Users'},
+        onDelete: 'CASCADE'
+      },
+      // imageableId: {
+      //   type: Sequelize.INTEGER,
+      //   references: {model:'Spots'},
+      //   references: {model:'Reviews'}
+      // },
+      // imageableType:{
+      //   type: Sequelize.ENUM('spot','review','none')
+      // },
+      
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

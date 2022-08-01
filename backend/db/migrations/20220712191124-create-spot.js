@@ -11,67 +11,53 @@ module.exports = {
       ownerId: {
         type: Sequelize.INTEGER,
         allowNull:false,
-        references: {model: 'Owners'}
-      },
-      name: {
-        type: Sequelize.STRING,
-        allowNull:false,
-        unique: true
+        references: {model: 'Users'}
       },
       address: {
         type: Sequelize.STRING,
         allowNull:false
       },
-      userId: {
-        type: Sequelize.INTEGER,
-        references: {model:'Users'},
-        // allowNull:false
-      },
-      totalOccupancy: {
-        type: Sequelize.INTEGER,
+      city: {
+        type: Sequelize.STRING,
         allowNull:false
       },
-      totalRooms: {
-        type: Sequelize.INTEGER,
+      state: {
+        type: Sequelize.STRING,
         allowNull:false
       },
-      totalBathrooms: {
-        type: Sequelize.INTEGER,
+      country: {
+        type: Sequelize.STRING,
         allowNull:false
       },
-      hasKitchen: {
-        type: Sequelize.BOOLEAN
-      },
-      hasAC: {
-        type: Sequelize.BOOLEAN,
+      lat: {
+        type: Sequelize.DECIMAL,
         allowNull:false
       },
-      hasHeating: {
-        type: Sequelize.BOOLEAN,
+      lng: {
+        type: Sequelize.DECIMAL,
         allowNull:false
       },
-      hasWifi: {
-        type: Sequelize.BOOLEAN,
+      name: {
+        type: Sequelize.STRING,
         allowNull:false
       },
-      isPetAllowed: {
-        type: Sequelize.BOOLEAN,
+      description: {
+        type: Sequelize.STRING,
         allowNull:false
       },
       price: {
         type: Sequelize.INTEGER,
         allowNull:false
       },
-      // image: {
-      //   type: Sequelize.STRING
-      // },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: new Date()
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: new Date()
       }
     });
   },

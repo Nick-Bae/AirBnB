@@ -1,7 +1,7 @@
 const express = require('express');
 
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
-const { User, Spot, Reservation, Review, sequelize, Owner, Image } = require('../../db/models');
+const { User, Spot, Review, sequelize, Image } = require('../../db/models');
 
 const router = express.Router();
 const { Op } = require("sequelize");
@@ -14,34 +14,32 @@ const validateCreateSpot = [
         .withMessage('name must be less than 15 characters'),
     check('address')
         .exists({ checkFalsy: true })
-        .withMessage('address is required'),
-    check('totalOccupancy')
+        .withMessage('Street address is required'),
+    check('city')
         .exists({ checkFalsy: true })
-        .withMessage('total occupancy is required'),
-    check('totalRooms')
+        .withMessage('city is required'),
+    check('state')
         .exists({ checkFalsy: true })
-        .withMessage('total rooms is required'),
-    check('totalBathrooms')
+        .withMessage('state is required'),
+    check('country')
         .exists({ checkFalsy: true })
-        .withMessage('total bathrooms is required'),
-    check('hasKitchen')
+        .withMessage('country is required'),
+    check('lat')
         .exists({ checkNull: true })
-        .withMessage('hasKitchen should not be empty'),
-    check('hasAC')
+        .withMessage('Latitude is not valid'),
+    check('lng')
         .exists({ checkNull: true })
-        .withMessage('hasAC should not be empty'),
-    check('hasHeating')
+        .withMessage('Longitude is not valid'),
+    check('name')
         .exists({ checkFalsy: true })
-        .withMessage('hasHeating should not be empty'),
-    check('hasWifi')
+        .isLength({max:50})
+        .withMessage('Name must be less than 50 characters'),
+    check('description')
         .exists({ checkNull: true })
-        .withMessage('hasWifi should not be empty'),
-    check('isPetAllowed')
-        .exists({ checkNull: true })
-        .withMessage('isPetAllowed should not be empty'),
+        .withMessage('Description is required'),
     check('price')
         .exists({ checkFalsy: true })
-        .withMessage('price is required'),
+        .withMessage('Price per day is required'),
     // check('size')
     //     .custom(({req})=> req.query.size <0)
     //     .withMessage('Size must be greater than 0'),
@@ -77,12 +75,44 @@ const validatePrice = (req, res, next) => {
 // Get all Spots
 router.get('/', async (req, res) => {
     const allSpots = await Spot.findAll({
-        include: { model: Image, as: 'previewImage', attributes: ['url'] }
+        attributes: {
+            include: [
+                // [sequelize.fn('AVG', sequelize.col("Reviews.stars")), "avgRating"]
+                [sequelize.fn('AVG', sequelize.col("Reviews.stars")), "avgRating"]
+            ]
+        },
+        include: [
+            { model: Review, attributes: [] },
+            { model: Image, as: 'previewImage', attributes: ['url'] },
+        ]
     });
 
     res.json({
         Spots: allSpots
     })
+})
+
+// Get all Spots owned by the Current User(55:28)
+router.get('/current', requireAuth, async (req, res) => {
+    const { user } = req;
+    const Spots = await Spot.findAll({
+        where: { ownerId: user.id },
+        attributes: {
+            include: [
+                [sequelize.fn('AVG', sequelize.col("Reviews.stars")), "avgRating"]
+            ]
+        },
+        include: [
+            { model: Review, attributes: [] },
+            { model: Image, as: 'previewImage', attributes: ['url'] },
+        ]
+    })
+
+    const image = await Image.findOne({
+        where: {spotId: spo}
+    })
+    // const spots = Spots.map(spot => spot)
+    res.json({ Spots })
 })
 
 // Add Query Filters to Get All Spots
@@ -130,19 +160,29 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
 
 //Get details of a Spot from an id (56:23)
 router.get('/:spotId', async (req, res) => {
+   
     const detail = await Spot.findByPk(req.params.spotId, {
         attributes: {
             include: [
-                [sequelize.fn('COUNT', sequelize.col("Reviews.comment")), "numReviews"],
-                [sequelize.fn('AVG', sequelize.col("Reviews.rating")), "avgRating"]
+                [sequelize.fn('COUNT', sequelize.col("Reviews.review")), "numReviews"],
+                [sequelize.fn('AVG', sequelize.col("Reviews.stars")), "avgRating"]
             ]
         },
         include: [
             { model: Review, attributes: [] },
-            { model: Owner }
-        ]
+            // { model:Image},
+            // { model: Image, as: 'Images', attributes: ['id', 'url']},
+            { model: User, as: 'Owner', attributes: ['id','firstName','lastName'] },
+        ],
+    })
+  
+    const image = await Image.findOne({
+        where: {spotId: req.params.spotId}
     })
 
+  detail.test = 'bae'
+   
+    res.json(detail)
     if (!detail || detail.id === null) {
         res.status(404)
         res.json({
@@ -150,7 +190,16 @@ router.get('/:spotId', async (req, res) => {
             "statusCode": 404
         })
     } else {
-        res.json(detail)
+        // res.json({
+            // id: detail.id, ownerId: detail.ownerId,
+            // address:detail.address, city: detail.city,
+            // state:detail.state , country:detail.country ,
+            // lat:detail.lat , lng:detail.lng , name:detail.name ,
+            // description:detail.description , price:detail.price ,
+            // createAt:detail.createAt , updateAt:detail.updateAt ,
+            // numReviews:detail.numReviews , avgStarRating:detail.avgStarRating ,
+            // image: [{id: image.id}]})
+        detail
     }
 })
 
@@ -158,23 +207,47 @@ router.get('/:spotId', async (req, res) => {
 router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
     const { user } = req;
 
-    const { name, address, totalOccupancy, totalRooms, totalBathrooms,
-        hasKitchen, hasAC, hasHeating, hasWifi, isPetAllowed, price } = req.body
+    const { address, city, state, country,
+        lat, lng, name, description, price } = req.body
     const newSpot = await Spot.create({
-        ownerId: user.id,
-        name,
-        address,
-        totalOccupancy,
-        totalRooms,
-        totalBathrooms,
-        hasKitchen,
-        hasAC,
-        hasHeating,
-        hasWifi,
-        isPetAllowed,
-        price,
+        ownerId:user.id,
+        address, 
+        city, 
+        state, 
+        country,
+        lat, 
+        lng, 
+        name, 
+        description, 
+        price
     })
     res.status(201).json(newSpot)
+})
+
+//============== Add an Image to a Spot based on the Spot's id
+router.post('/:spotId/image', requireAuth, async (req, res) => {
+    const { user } = req
+    const {url}=req.body
+    const spot = await Spot.findByPk(req.params.spotId);
+    if (!spot) {
+        res.json({
+            "message": "Spot couldn't be found",
+            "statusCode": 404
+        })
+    } else if (user === null || user.id !== parseInt(spot.ownerId)) {
+        res.status(403).json("No Permission")
+    } else {
+        const newImage = await Image.create({
+            // imageableId,
+            spotId: req.params.spotId,
+            url
+        })
+        res.json({
+            id: newImage.id,
+            imageableType: newImage.type,
+            url: newImage.url
+        });
+    }
 })
 
 //Edit a Spot
@@ -240,38 +313,7 @@ router.delete('/:spotId', restoreUser, async (req, res) => {
     // }
 })
 
-// Add an Image to a Spot based on the Spot's id
 
-router.post('/:spotId/image', async (req, res) => {
-    const { user } = req
-    // const image = await fetch("http://localhost:8000/spots/image/:spotId", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: url
-    // })
-    const { url } = req.body;
-    const spot = await Spot.findByPk(req.params.spotId);
-    if (!spot) {
-        res.json({
-            "message": "Spot couldn't be found",
-            "statusCode": 404
-        })
-    } else if (user === null || user.id !== parseInt(spot.ownerId)){
-        res.status(403).json("No Permission")
-    } else {
-        const newImage = await Image.create({
-            // imageableId,
-            spotId: req.params.spotId,
-            type: "Spot",
-            url
-        })
-        res.json({
-            id:newImage.id, 
-            imageableType:newImage.type, 
-            url:newImage.url
-        });
-    } 
-})
 
 // Get all Reviews by a Spot's id
 router.get('/:spotId/reviews', async (req, res) => {

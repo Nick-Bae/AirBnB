@@ -32,27 +32,41 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
-    static async signup({ username, email, password }) {
+    static async signup({ firstName, lastName, email, username, password }) {
       const hashedPassword = bcrypt.hashSync(password);
       const user = await User.create({
-        username,
+        firstName,
+        lastName,
         email,
+        username,
         hashedPassword
       });
       return await User.scope('currentUser').findByPk(user.id);
     }
 
     static associate(models) {
-      // define association here
-      User.hasMany(models.Reservation, {foreignKey:'userId',onDelete: 'CASCADE', hooks:true}),
-      User.hasMany(models.Review, {foreignKey: 'userId'})
-      User.hasMany(models.Spot, {foreignKey: 'userId'})
+      User.hasMany(models.Spot, { foreignKey: 'ownerId' })
+      User.hasMany(models.Review, { foreignKey: 'userId' })
+      User.hasMany(models.Image, { foreignKey: 'userId' })
+      User.hasMany(models.Booking, { foreignKey: 'userId' })
     }
   };
-  
+
   User.init(
     {
-      username: {
+      firstName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          len: [4, 30],
+          isNotEmail(value) {
+            if (Validator.isEmail(value)) {
+              throw new Error("Cannot be an email.");
+            }
+          }
+        }
+      },
+      lastName: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
@@ -87,6 +101,7 @@ module.exports = (sequelize, DataTypes) => {
         //     msg:'User already exists'
         // }
       },
+      username: DataTypes.STRING,
       hashedPassword: {
         type: DataTypes.STRING.BINARY,
         allowNull: false,

@@ -1,7 +1,7 @@
 const express = require('express');
 
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
-const { User, Spot, Reservation, Review, sequelize, Image } = require('../../db/models');
+const { User, Spot, Review, sequelize, Image } = require('../../db/models');
 
 const router = express.Router();
 const { check } = require('express-validator');
@@ -16,17 +16,27 @@ const validateReview = [
     handleValidationErrors
 ]
 
-//Get all Reviews of the Current User
-// router.get('/:userId', async(req,res)=>{
-//     const reviews = await Review.findAll({
-//         where: {userId:req.params.userId },
-//         include: [{model: User},{model: Spot} ],
-//     })
-//     res.json(reviews)
-// })
+
+//==========Get all Reviews of the Current User==========
+router.get('/current', requireAuth, async (req, res) => {
+    const { user } = req;
+
+    const reviews = await Review.findAll({
+        where: { userId: user.id },
+        include: [
+            { model: User, attributes: ['id','firstName','lastName'] },
+            { model: Spot, 
+                attributes: 
+                { exclude: ["description","createdAt", "updatedAt"] } },
+            // {model:Image, attributes:['id','imageabledId','url']}
+            {model:Image, attributes:['id','url']}
+        ]
+    })
+    res.json(reviews)
+})
 
 
-// Get all Reviews by a Spot's id
+//============== Get all Reviews by a Spot's id===========
 router.get('/spot/:spotId', async (req, res) => {
     const reviewSpot = await Review.findAll({
         where: { spotId: req.params.spotId },
@@ -96,37 +106,37 @@ router.put('/:reviewId', requireAuth, validateReview, async (req, res) => {
 //Delete a Review
 router.delete('/:reviewId', requireAuth, async (req, res) => {
     // try {
-        const deleteReview = await Review.findByPk(req.params.reviewId)
-       if (req.user.id === parseInt(req.params.reviewId)) {
-           deleteReview.destroy()
-           res.json({
-               "message": "Successfully deleted",
-               "statusCode": 200
-            })
-       } else if (!deleteReview) {
-           res.status(404).json({
-               "message": "Review couldn't be found",
-               "statusCode": 404
-           })
-       } else {
+    const deleteReview = await Review.findByPk(req.params.reviewId)
+    if (req.user.id === parseInt(req.params.reviewId)) {
+        deleteReview.destroy()
+        res.json({
+            "message": "Successfully deleted",
+            "statusCode": 200
+        })
+    } else if (!deleteReview) {
+        res.status(404).json({
+            "message": "Review couldn't be found",
+            "statusCode": 404
+        })
+    } else {
         res.status(401).json("Unauthorized User")
-       }
+    }
 })
 
 // Add an Image to a Review based on the Review's id
-router.post('/:reviewId/image', async (req, res)=>{
-    const {user} = req;
-    const {url} = req.body;
+router.post('/:reviewId/image', async (req, res) => {
+    const { user } = req;
+    const { url } = req.body;
     const review = await Review.findByPk(req.params.reviewId);
     const countReview = await Image.count({
-    //   col: 'spotId'
+        //   col: 'spotId'
     })
 
-    if (!review){
+    if (!review) {
         res.json({
             "message": "Review couldn't be found",
             "statusCode": 404
-          })
+        })
     } else if (user === null || user.id !== parseInt(review.userId)) {
         res.status(403).json("No permission")
     } else {
