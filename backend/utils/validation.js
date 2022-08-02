@@ -31,7 +31,9 @@ const handleValidationErrors = (req, _res, next) => {
       error = { email: "Invalid email" }
     } else if (errors === 'Password') {
       error = { password: "IPassword is required" }
-    } 
+    } else {
+      
+    }
     err.errors = error
     next(err);
   }

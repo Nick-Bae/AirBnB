@@ -74,18 +74,7 @@ const validatePrice = (req, res, next) => {
 
 // Get all Spots
 router.get('/', async (req, res) => {
-    const Spots = await Spot.findAll({
-        // attributes: {
-        //     include: [
-        //         // [sequelize.fn('AVG', sequelize.col("Reviews.stars")), "avgRating"]
-        //         [sequelize.fn('AVG', sequelize.col("Reviews.stars")), "avgRating"]
-        //     ]
-        // },
-        // include: [
-        //     { model: Review, attributes: [] },
-        //     { model: Image, as: 'previewImage', attributes: ['url'] },
-        // ]
-    });
+    const Spots = await Spot.findAll();
 
     let avgStars =[] ;
     for (i=0; i <Spots.length; i++){
@@ -338,21 +327,18 @@ router.put('/:spotId', requireAuth, validateCreateSpot, async (req, res) => {
             "statusCode": 404
         })
     } else if (user.id === parseInt(spot.ownerId)) {
-        const { name, address, totalOccupancy, totalRooms, totalBathrooms,
-            hasKitchen, hasAC, hasHeating, hasWifi, isPetAllowed, price } = req.body
+        const { address, city, state, country, lat, lng, name, description, price} = req.body
         const editSpot = await Spot.findByPk(req.params.spotId)
         editSpot.update({
             ownerId: user.id,
-            name,
             address,
-            totalOccupancy,
-            totalRooms,
-            totalBathrooms,
-            hasKitchen,
-            hasAC,
-            hasHeating,
-            hasWifi,
-            isPetAllowed,
+            city, 
+            state, 
+            country, 
+            lat, 
+            lng, 
+            name, 
+            description,
             price,
         })
         res.status(200)
