@@ -74,8 +74,15 @@ const validatePrice = (req, res, next) => {
 
 // Get all Spots
 router.get('/', async (req, res) => {
-    const Spots = await Spot.findAll();
-
+    const Spots = await Spot.findAll({
+        include: {
+            model: Image,
+            where: {
+                previewImage: true
+            },
+            as: "previewImage"
+        }
+    });
     let avgStars =[] ;
     for (i=0; i <Spots.length; i++){
         const revAvg = await Review.findAll({
@@ -89,18 +96,19 @@ router.get('/', async (req, res) => {
         })
         avgStars.push(revAvg[0])
     }
-   
-let images =[];
-for (i=0; i <Spots.length; i++){
-    const image = await Image.findAll({
-        where: { spotId: Spots[i].id },
-        attributes: {
-            exclude:['id','userId','spotId','review','stars','createdAt','updatedAt' ]
-        },
-    })
-    images.push(image[0])
-    // if (image === undefined) images.push({"url":"no image"})
-}
+
+// let images =[];
+// for (i=0; i <Spots.length; i++){
+//     const image = await Image.findAll({
+//         where: { spotId: Spots[i].id },
+//         attributes: {
+//             exclude:['id','userId','spotId','review','stars','createdAt','updatedAt' ]
+//         },
+//     })
+
+//     images.push(image[0])
+//     // if (image === undefined) images.push({"url":"no image"})
+// }
 
     const spots = Spots.map(spot => places = {
         id: spot.id, ownerId: spot.ownerId,
@@ -109,11 +117,12 @@ for (i=0; i <Spots.length; i++){
         lat: spot.lat, lng: spot.lng, name: spot.name,
         description: spot.description, price: spot.price,
         createAt: spot.createdAt, updateAt: spot.updatedAt,
+        previewImage:spot.previewImage[0].url
     })
 
     for (i=0; i < spots.length; i++){
          spots[i].avgRating= avgStars[i].dataValues.avgRating;
-         spots[i].previewImage = images[i].url;
+        //  spots[i].previewImage = images[i].url;
     }
 
     res.json({ Spots: spots })
