@@ -59,15 +59,15 @@ router.put('/:reviewId', requireAuth, validateReview, async (req, res) => {
     const {user}=req
     const editReview = await Review.findByPk(req.params.reviewId)
     const reviewId = req.params.reviewId
-    res.json(editReview.userId)
-    if (user.id === parseInt(editReview.userId)) {
-        editReview.update({ review })
-        res.json(editReview)
-    } else if (!editReview) {
+    // res.json(editReview)
+    if (!editReview) {
         res.status(404).json({
             "message": "Review couldn't be found",
             "statusCode": 404
         })
+    } else if (user.id === parseInt(editReview.userId)) {
+        editReview.update({ review })
+        res.json(editReview)
     } else {
         res.status(401).json("Unauthorized User")
     }
