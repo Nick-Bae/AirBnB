@@ -117,12 +117,12 @@ router.get('/', async (req, res) => {
         lat: spot.lat, lng: spot.lng, name: spot.name,
         description: spot.description, price: spot.price,
         createAt: spot.createdAt, updateAt: spot.updatedAt,
-        previewImage:spot.previewImage[0].url
+        // previewImage:spot.previewImage[0].url
     })
 
     for (i=0; i < spots.length; i++){
          spots[i].avgRating= avgStars[i].dataValues.avgRating;
-        //  spots[i].previewImage = images[i].url;
+         spots[i].previewImage = images[i].url;
     }
 
     res.json({ Spots: spots })
@@ -390,7 +390,7 @@ router.delete('/:spotId', restoreUser, async (req, res) => {
 router.get('/:spotId/reviews', async (req, res) => {
     const reviewSpot = await Review.findAll({
         where: { spotId: req.params.spotId },
-        include: [{ model: User }, { model: image }]
+        include: [{ model: User }, { model: Image }]
     })
 
     if (!reviewSpot) {

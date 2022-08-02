@@ -37,21 +37,21 @@ router.get('/current', requireAuth, async (req, res) => {
 
 
 //============== Get all Reviews by a Spot's id===========
-router.get('/spot/:spotId', async (req, res) => {
-    const reviewSpot = await Review.findAll({
-        where: { spotId: req.params.spotId },
-        include: { model: User }
-    })
+// router.get('/spot/:spotId', async (req, res) => {
+//     const reviewSpot = await Review.findAll({
+//         where: { spotId: req.params.spotId },
+//         include: { model: User }
+//     })
 
-    if (!reviewSpot) {
-        res.status(404).json({
-            "message": "Spot couldn't be found",
-            "statusCode": 404
-        })
-    } else {
-        res.json({ review: reviewSpot })
-    }
-})
+//     if (!reviewSpot) {
+//         res.status(404).json({
+//             "message": "Spot couldn't be found",
+//             "statusCode": 404
+//         })
+//     } else {
+//         res.json({ review: reviewSpot })
+//     }
+// })
 
 //Create a Review for a Spot based on the Spot's id
 router.post('/spot/:spotId/reviews', requireAuth, validateReview, async (req, res) => {
