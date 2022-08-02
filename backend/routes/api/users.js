@@ -7,6 +7,10 @@ const router = express.Router();
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 const validateSignup = [
+  check('password')
+    .exists({ checkFalsy: true })
+    .isLength({ min: 6 })
+    .withMessage('Password must be 6 characters or more.'),
   check('email')
     .exists({ checkFalsy: true })
     .isEmail()
@@ -15,15 +19,12 @@ const validateSignup = [
     .exists({ checkFalsy: true })
     // .isLength({ min: 4 })
     // .withMessage('Please provide a username with at least 4 characters.'),
-    .withMessage('User Name is required'),
+    .withMessage('Username is required'),
   // check('username')
   //   .not()
   //   .isEmail()
   //   .withMessage('Username is required.'),
-  check('password')
-    .exists({ checkFalsy: true })
-    .isLength({ min: 6 })
-    .withMessage('Password must be 6 characters or more.'),
+  
   check('firstName')
     .exists({ checkFalsy: true })
     .withMessage('First Name is required'),
@@ -33,19 +34,6 @@ const validateSignup = [
   handleValidationErrors
 ];
 
- //Get the Current User
- router.get(
-  '/current',
-  restoreUser,
-  (req, res) => {
-    const { user } = req;
-    if (user) {
-      return res.json(
-        user.toSafeObject()
-         );
-    } else return res.json("No logg in user");
-  }
-);
 
 // Sign Up a User
 router.post(

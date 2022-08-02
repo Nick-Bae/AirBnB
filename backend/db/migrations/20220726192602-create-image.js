@@ -9,7 +9,8 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       url: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull:true
       },
       previewImage: {
         type: Sequelize.BOOLEAN

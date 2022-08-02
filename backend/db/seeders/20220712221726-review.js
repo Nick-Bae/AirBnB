@@ -13,36 +13,30 @@ module.exports = {
       spotId: 1,
       review: "This was an awesome spot!",
       stars: 5
-    }
-  //   {
-  //    userId: 1,
-  //    spotId: 1,
-  //    comment: "This place is nice and clean",
-  //    rating: 4,
-  //    createdAt: new Date(),
-  //    updatedAt: new Date()
-  //  },
-  //   {
-  //    userId: 2 ,
-  //    spotId: 2,
-  //    comment:"The host is very kind" ,
-  //    rating: 5,
-  //    createdAt: new Date(),
-  //    updatedAt: new Date()
-  //  },
-  //   {
-  //    userId: 3,
-  //    spotId: 1,
-  //    comment: "Bedrooms are very tiny" ,
-  //    rating: 3,
-  //    createdAt: new Date(),
-  //    updatedAt: new Date()
-  //  },
+    },
+    {
+     userId: 1,
+     spotId: 1,
+     review: "This place is nice and clean",
+     stars: 4,
+   },
+    {
+     userId: 2 ,
+     spotId: 2,
+     review:"The host is very kind" ,
+     stars: 5,
+   },
+    {
+     userId: 3,
+     spotId: 3,
+     review: "Bedrooms are very tiny" ,
+     stars: 3,
+   },
   //   {
   //    userId: 4 ,
   //    spotId: 5,
-  //    comment: "Everything is in walking distance",
-  //    rating: 4.5,
+  //    review: "Everything is in walking distance",
+  //    stars: 4.5,
   //    createdAt: new Date(),
   //    updatedAt: new Date()
   //  },
@@ -50,7 +44,7 @@ module.exports = {
   //    userId: 1,
   //    spotId: 2,
   //    comment: "My family had a great time",
-  //    rating: 4.9,
+  //    stars: 4.9,
   //    createdAt: new Date(),
   //    updatedAt: new Date()
   //  },

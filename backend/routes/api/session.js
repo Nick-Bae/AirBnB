@@ -24,11 +24,26 @@ router.delete(
       .withMessage('Email or username is required'),
     check('password')
       .exists({ checkFalsy: true })
-      .withMessage('Password is required'),
+      .withMessage("Password is required"),
     handleValidationErrors
   ];
 
-  //log in a user
+
+ //==========Get the Current User===========
+ router.get(
+  '/',
+  restoreUser,
+  (req, res) => {
+    const { user } = req;
+    if (user) {
+      return res.json(
+        user.toSafeObject()
+         );
+    } else return res.json("No logg in user");
+  }
+);
+
+  //=============log in a user=================
   router.post(
     '/',
     validateLogin,
