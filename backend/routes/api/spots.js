@@ -74,58 +74,94 @@ const validatePrice = (req, res, next) => {
 
 // Get all Spots
 router.get('/', async (req, res) => {
-    const Spots = await Spot.findAll({
-        include: {
-            model: Image,
-            where: {
-                previewImage: true
-            },
-            as: "previewImage"
-        }
-    });
-    let avgStars =[] ;
-    for (i=0; i <Spots.length; i++){
-        const revAvg = await Review.findAll({
-            where: { spotId: Spots[i].id },
-            attributes: {
-                include: [
-                    [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
-                ],
-                exclude:['id','userId','spotId','review','stars','createdAt','updatedAt' ]
-            },
-        })
-        avgStars.push(revAvg[0])
-    }
+//     const Spots = await Spot.findAll({
+//         include: 
+//         {
+//             model: Image,
+//             where: {
+//                 previewImage: true
+//             },
+//             as: "previewImage"
+//         }
+//     });
+//     let avgStars =[] ;
+//     for (i=0; i <Spots.length; i++){
+//         const revAvg = await Review.findAll({
+//             where: { spotId: Spots[i].id },
+//             attributes: {
+//                 include: [
+//                     [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
+//                 ],
+//                 exclude:['id','userId','spotId','review','stars','createdAt','updatedAt' ]
+//             },
+//         })
+//         avgStars.push(revAvg[0])
+//     }
 
-// let images =[];
-// for (i=0; i <Spots.length; i++){
-//     const image = await Image.findAll({
-//         where: { spotId: Spots[i].id },
-//         attributes: {
-//             exclude:['id','userId','spotId','review','stars','createdAt','updatedAt' ]
-//         },
+// // let images =[];
+// // for (i=0; i <Spots.length; i++){
+// //     const image = await Image.findAll({
+// //         where: { spotId: Spots[i].id },
+// //         attributes: {
+// //             exclude:['id','userId','spotId','review','stars','createdAt','updatedAt' ]
+// //         },
+// //     })
+
+// //     images.push(image[0])
+// //     // if (image === undefined) images.push({"url":"no image"})
+// // }
+//     let spots = Spots.map(spot => places = {
+//         id: spot.id, ownerId: spot.ownerId,
+//         address: spot.address, city: spot.city,
+//         state: spot.state, country: spot.country,
+//         lat: spot.lat, lng: spot.lng, name: spot.name,
+//         description: spot.description, price: spot.price,
+//         createAt: spot.createdAt, updateAt: spot.updatedAt,
+//         // avgRating: avgStars.dataValues.avgRating
+//         // previewImage:spot.previewImage[0].url
 //     })
 
-//     images.push(image[0])
-//     // if (image === undefined) images.push({"url":"no image"})
-// }
+//     for (i=0; i < spots.length; i++){
+//          spots[i].avgRating= avgStars[i].dataValues.avgRating;
+//         //  spots[i].previewImage = images[i].url;
+//     }
+//     res.json(Spots[0].previewImage[0])
+//      result = spots.map(spot => images = {
+        
+//         previewImage:spot.previewImage[0]
+//     })
+//     res.json({ Spots: spots })
 
-    const spots = Spots.map(spot => places = {
-        id: spot.id, ownerId: spot.ownerId,
-        address: spot.address, city: spot.city,
-        state: spot.state, country: spot.country,
-        lat: spot.lat, lng: spot.lng, name: spot.name,
-        description: spot.description, price: spot.price,
-        createAt: spot.createdAt, updateAt: spot.updatedAt,
-        // previewImage:spot.previewImage[0].url
-    })
+const Spots = await Spot.findAll({
+                // group: Spot.id,
+                attributes: {
+                    include: [
+                        // [sequelize.fn('AVG', sequelize.col("Reviews.stars")), "avgRating"]
+                    sequelize.literal(`(
+                        SELECT AVG(stars) AS "avgRating"
+                        FROM Reviews 
+                        GROUP BY
+                           spotId
+                    )`
 
-    for (i=0; i < spots.length; i++){
-         spots[i].avgRating= avgStars[i].dataValues.avgRating;
-         spots[i].previewImage = images[i].url;
-    }
-
-    res.json({ Spots: spots })
+                    )
+                        ,
+                    // [sequelize.literal("Images.url","previewImage")]
+                ]
+            },
+            include: [
+                { model:Review, attributes:[] },
+                {
+                model: Image,
+                where: {
+                    previewImage: true
+                },
+                as: "previewImage"
+            }
+            ]
+        });
+    //    
+            res.json({ Spots })
 
 })
 
@@ -402,6 +438,47 @@ router.get('/:spotId/reviews',requireAuth, async (req, res) => {
     } else {
         res.json({ Reviews: reviewSpot })
     }
+})
+
+const validateReview = [
+    check('review')
+        .exists({ checkFalsy: true })
+        .withMessage('comment text is required'),
+    // check('userId')
+    //     .exists({checkFalsy:true})
+    //     .withMessage('User already has a review for this spot'),
+    handleValidationErrors
+]
+//Create a Review for a Spot based on the Spot's id
+router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res) => {
+        const {user}= req
+    
+        const isUserReview = await Review.findOne({
+            where: {
+                userId: user.id,
+                spotId: req.params.spotId
+            }
+        })
+        
+        const spot = await Spot.findByPk(req.params.spotId)
+
+        if (isUserReview !== null) {
+            res.status(403).json({
+                "message": "User already has a review for this spot",
+                "statusCode": 403
+            })
+        } else if (!spot || spot.length === 0) {
+            res.status(404).json({
+                "message": "Spot couldn't be found",
+                "statusCode": 404
+            })
+        } else {
+            const { review, stars } = req.body
+            const newReview = await Review.create({
+                userId: req.params.userId, spotId: req.params.spotId, review, stars
+            })
+            res.json(newReview)
+        }
 })
 
 module.exports = router;

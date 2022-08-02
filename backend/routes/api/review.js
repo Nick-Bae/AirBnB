@@ -53,38 +53,6 @@ router.get('/current', requireAuth, async (req, res) => {
 //     }
 // })
 
-//Create a Review for a Spot based on the Spot's id
-router.post('/spot/:spotId/reviews', requireAuth, validateReview, async (req, res) => {
-
-    try {
-        const isUserReview = await Review.findOne({
-            where: {
-                userId: req.params.userId,
-                spotId: req.params.spotId
-            }
-        })
-
-        if (isUserReview !== null) {
-            res.status(403).json({
-                "message": "User already has a review for this spot",
-                "statusCode": 403
-            })
-        } else {
-            const { comment } = req.body
-            const newReview = await Review.create({
-                userId: req.params.userId, spotId: req.params.spotId, comment
-            })
-            res.json(newReview)
-        }
-    } catch (err) {
-
-        res.status(404).json({
-            "message": "Spot couldn't be found",
-            "statusCode": 404
-        })
-    }
-})
-
 //Edit a Review
 router.put('/:reviewId', requireAuth, validateReview, async (req, res) => {
     const { comment } = req.body
