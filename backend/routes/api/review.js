@@ -59,7 +59,8 @@ router.put('/:reviewId', requireAuth, validateReview, async (req, res) => {
     const {user}=req
     const editReview = await Review.findByPk(req.params.reviewId)
     const reviewId = req.params.reviewId
-    if (user.id === parseInt(reviewId.userId)) {
+    res.json(editReview.userId)
+    if (user.id === parseInt(editReview.userId)) {
         editReview.update({ review })
         res.json(editReview)
     } else if (!editReview) {
