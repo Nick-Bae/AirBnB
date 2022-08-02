@@ -7,9 +7,9 @@ const router = express.Router();
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 const validateReview = [
-    check('comment')
+    check('review')
         .exists({ checkFalsy: true })
-        .withMessage('comment text is required'),
+        .withMessage('review text is required'),
     // check('userId')
     //     .exists({checkFalsy:true})
     //     .withMessage('User already has a review for this spot'),
