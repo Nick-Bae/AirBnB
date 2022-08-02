@@ -87,48 +87,47 @@ router.get('/', async (req, res) => {
         // ]
     });
 
-//     let avgStars =[] ;
-//     for (i=0; i <Spots.length; i++){
-//         const revAvg = await Review.findAll({
-//             where: { spotId: Spots[i].id },
-//             attributes: {
-//                 include: [
-//                     [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
-//                 ],
-//                 exclude:['id','userId','spotId','review','stars','createdAt','updatedAt' ]
-//             },
-//         })
-//         avgStars.push(revAvg[0])
-//     }
+    let avgStars =[] ;
+    for (i=0; i <Spots.length; i++){
+        const revAvg = await Review.findAll({
+            where: { spotId: Spots[i].id },
+            attributes: {
+                include: [
+                    [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
+                ],
+                exclude:['id','userId','spotId','review','stars','createdAt','updatedAt' ]
+            },
+        })
+        avgStars.push(revAvg[0])
+    }
    
-// let images =[];
-// for (i=0; i <Spots.length; i++){
-//     const image = await Image.findAll({
-//         where: { spotId: Spots[i].id },
-//         attributes: {
-//             exclude:['id','userId','spotId','review','stars','createdAt','updatedAt' ]
-//         },
-//     })
-//     images.push(image[0])
-//     // if (image === undefined) images.push({"url":"no image"})
-// }
+let images =[];
+for (i=0; i <Spots.length; i++){
+    const image = await Image.findAll({
+        where: { spotId: Spots[i].id },
+        attributes: {
+            exclude:['id','userId','spotId','review','stars','createdAt','updatedAt' ]
+        },
+    })
+    images.push(image[0])
+    // if (image === undefined) images.push({"url":"no image"})
+}
 
-//     const spots = Spots.map(spot => places = {
-//         id: spot.id, ownerId: spot.ownerId,
-//         address: spot.address, city: spot.city,
-//         state: spot.state, country: spot.country,
-//         lat: spot.lat, lng: spot.lng, name: spot.name,
-//         description: spot.description, price: spot.price,
-//         createAt: spot.createdAt, updateAt: spot.updatedAt,
-//     })
+    const spots = Spots.map(spot => places = {
+        id: spot.id, ownerId: spot.ownerId,
+        address: spot.address, city: spot.city,
+        state: spot.state, country: spot.country,
+        lat: spot.lat, lng: spot.lng, name: spot.name,
+        description: spot.description, price: spot.price,
+        createAt: spot.createdAt, updateAt: spot.updatedAt,
+    })
 
-//     for (i=0; i < spots.length; i++){
-//          spots[i].avgRating= avgStars[i].dataValues.avgRating;
-//          spots[i].previewImage = images[i].url;
-//     }
+    for (i=0; i < spots.length; i++){
+         spots[i].avgRating= avgStars[i].dataValues.avgRating;
+         spots[i].previewImage = images[i].url;
+    }
 
-    // res.json({ Spots: spots })
-    res.json({ Spots })
+    res.json({ Spots: spots })
 
 })
 
