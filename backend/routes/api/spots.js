@@ -452,17 +452,17 @@ const validateReview = [
 //Create a Review for a Spot based on the Spot's id
 router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res) => {
         const {user}= req
-    
+        const { review, stars } = req.body
         const isUserReview = await Review.findOne({
             where: {
                 userId: user.id,
                 spotId: req.params.spotId
             }
         })
-        res.json(isUserReview)
+        // res.json(isUserReview)
         const spot = await Spot.findByPk(req.params.spotId)
 
-        if (isUserReview  || isUserReview.length ===0) {
+        if (isUserReview ) {
             res.status(403).json({
                 "message": "User already has a review for this spot",
                 "statusCode": 403
@@ -473,9 +473,8 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res) =>
                 "statusCode": 404
             })
         } else {
-            const { review, stars } = req.body
             const newReview = await Review.create({
-                userId: req.params.userId, spotId: req.params.spotId, review, stars
+                userId:user.id, spotId: req.params.spotId, review, stars
             })
             res.json(newReview)
         }
