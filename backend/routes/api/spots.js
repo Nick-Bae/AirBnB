@@ -387,10 +387,11 @@ router.delete('/:spotId', restoreUser, async (req, res) => {
 
 
 // Get all Reviews by a Spot's id
-router.get('/:spotId/reviews', async (req, res) => {
+router.get('/:spotId/reviews',requireAuth, async (req, res) => {
     const reviewSpot = await Review.findAll({
         where: { spotId: req.params.spotId },
-        include: [{ model: User }, { model: Image }]
+        include: [{ model: User, attributes: ['id','firstName','lastName'] }, 
+        { model: Image, attributes: ['id', ['spotId','imageableId'],'url'] }]
     })
 
     if (!reviewSpot) {
