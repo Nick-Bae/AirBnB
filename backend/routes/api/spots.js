@@ -459,10 +459,10 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res) =>
                 spotId: req.params.spotId
             }
         })
-        
+        res.json(isUserReview)
         const spot = await Spot.findByPk(req.params.spotId)
 
-        if (isUserReview !== null) {
+        if (isUserReview  || isUserReview.length ===0) {
             res.status(403).json({
                 "message": "User already has a review for this spot",
                 "statusCode": 403
