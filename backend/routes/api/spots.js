@@ -394,7 +394,7 @@ router.get('/:spotId/reviews',requireAuth, async (req, res) => {
         { model: Image, attributes: ['id', ['spotId','imageableId'],'url'] }]
     })
 
-    if (!reviewSpot) {
+    if (!reviewSpot || reviewSpot.length === 0) {
         res.status(404).json({
             "message": "Spot couldn't be found",
             "statusCode": 404
