@@ -449,7 +449,8 @@ const validateReview = [
     //     .withMessage('User already has a review for this spot'),
     handleValidationErrors
 ]
-//Create a Review for a Spot based on the Spot's id
+
+//==========Create a Review for a Spot based on the Spot's id=====================
 router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res) => {
         const {user}= req
         const { review, stars } = req.body
