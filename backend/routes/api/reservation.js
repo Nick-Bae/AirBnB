@@ -1,7 +1,7 @@
 const express = require('express');
 
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
-const { User, Spot, Booking, Review, sequelize } = require('../../db/models');
+const { User, Spot, Booking, Review, sequelize, Image } = require('../../db/models');
 
 const router = express.Router();
 const {Op}=require("sequelize")
@@ -13,14 +13,40 @@ const validateReservation =[
         .withMessage('')
 ]
 
-//Get all of the Current User's Bookings
-// router.get('/:userId', async(req, res)=>{
-//     const reservations = await Reservation.findAll({
-//         where: {userId: req.params.userId},
-//         include: {model:Spot}
-//     });
-//     res.json(reservations)
-// })
+// ============ Get all of the Current User's Bookings =================
+router.get('/current', async(req, res)=>{
+    const {user}=req
+    // res.json(user.id)
+    const reservations = await Booking.findAll({
+        where: {userId: user.id},
+        // attributes: ['id','spotId'],
+        include: [{model:Spot, attributes: {exclude:['description','createdAt','updatedAt']}},
+        // {
+        //                 model: Image,
+        //                 where: {
+        //                     previewImage: true
+        //                 },
+        //                 as: "previewImage"
+        //             }
+    ]
+    });
+    // const image = await Image.find
+    const bookings = reservations.map(booking => place={
+        id: booking.id, spotId: booking.spotId,
+        Spot: {address: booking.Spot.address, city: booking.Spot.city,
+            state: booking.Spot.state, country: booking.Spot.country,
+            lat: booking.Spot.lat, lng: booking.Spot.lng, name: booking.Spot.name,
+             price: booking.Spot.price,
+        }, 
+        userId: booking.userId, startDate: booking.startDate, endDate: booking.endDate,
+        createdAt: booking.createdAt, updatedAt: booking.updatedAt
+    })
+
+
+
+    res.json({Bookings:bookings})
+    // res.json({Bookings:reservations})
+})
 
 //Get all Bookings for a Spot based on t{he Spot's id
 router.get('/spot/:spotId', async(req, res)=>{
