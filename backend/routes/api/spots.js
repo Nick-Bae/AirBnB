@@ -83,7 +83,7 @@ router.get('/', async (req, res) => {
                     sequelize.fn('AVG', sequelize.col('Reviews.stars')), "avgRating"
                 ]
             ]
-        }, group: ['Spot.id'],
+        },
         include: [
             { model: Review, attributes: [] },
             {
@@ -93,7 +93,8 @@ router.get('/', async (req, res) => {
                 },
                 as: "previewImage"
             }
-        ]
+        ],
+         group: ['Spot.id', 'previewImage.id' ],
     })
 
     // res.json(spots)
