@@ -94,7 +94,7 @@ router.get('/', async (req, res) => {
             },
             { model: Review, attributes: [] },
         ],
-         group: ['Spot.id' ],
+         group: ['Spot.id','Images.id' ],
     })
 
     const Spots = spots.map(spot => places = {
