@@ -87,9 +87,9 @@ router.get('/', async (req, res) => {
         },
         include: [
             { model: Image, attributes:[],
-                where: {
-                    previewImage: true
-                },
+                // where: {
+                //     previewImage: true
+                // },
             },
             { model: Review, attributes: [] },
         ],
