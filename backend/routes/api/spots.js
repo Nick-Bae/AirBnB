@@ -144,7 +144,7 @@ router.get('/current', requireAuth, async (req, res) => {
         include: [
             { model: Image,  attributes: ['url'] },
             { model: Review, attributes: [] }
-        ], group: ['Spot.id']
+        ], group: ['Spot.id','Images.id']
     })
     // res.json(Spots)
 
