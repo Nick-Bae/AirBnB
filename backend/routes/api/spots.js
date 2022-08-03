@@ -96,7 +96,7 @@ router.get('/', async (req, res) => {
         ]
     })
 
-//     res.json(spots)
+    res.json(spots)
 //     const avgStars = await Review.findAll({
 //         attributes: {
 //             include: [
