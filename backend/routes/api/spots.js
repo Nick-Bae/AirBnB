@@ -82,7 +82,7 @@ router.get('/', async (req, res) => {
                 [
                     sequelize.fn('AVG', sequelize.col('Reviews.stars')), "avgRating"
                 ],
-                [sequelize.literal("Images.url"), "previewImage"]
+                // [sequelize.literal("Images.url"), "previewImage"]
             ]
         },
         include: [
