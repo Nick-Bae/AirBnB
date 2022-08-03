@@ -13,14 +13,19 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Booking.init({
+    spotId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
       // allowNull:false
     
-    spotId: DataTypes.INTEGER,
       // allowNull:false
     startDate: DataTypes.DATEONLY,
       // allowNull:false
-    endDate: DataTypes.DATEONLY,
+    endDate: {
+      type:DataTypes.DATEONLY,
+      // validate:{
+      //   isAfter: "startDate"
+      // }
+    },
       // allowNull:false
    }, {
     sequelize,

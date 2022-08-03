@@ -514,14 +514,20 @@ router.get('/:spotId/bookings', requireAuth, async (req, res) => {
 
 
 // =============Create a Booking from a Spot based on the Spot's id=============
-router.post('/:spotId/bookings', async (req, res) => {
+router.post('/:spotId/bookings', requireAuth, async (req, res) => {
     const {user}=req;
     const { startDate, endDate } = req.body
     const spot = await Spot.findByPk(req.params.spotId)
-    if (spot === null) res.status(404).json({
+    // res.json(spot)
+
+    if (spot === null) {
+        res.status(404).json({
         "message": "Spot couldn't be found",
         "statusCode": 404
-    })
+    }) 
+    }else if (spot.ownerId === user.id){
+        res.status(404).json("Cannot book this spot. Spot must NOT belong to the current user ")
+    }
     const reservInSpot = await Booking.findAll({
         where: {
             spotId: req.params.spotId,
@@ -542,8 +548,8 @@ router.post('/:spotId/bookings', async (req, res) => {
    
     // if (startDate > reservInSpot.startDate) let conflict = startDate
 
-    let conflict = startDate > reservInSpot[0].startDate ? 'Start Date' : 'End date'
     if (reservInSpot.length !== 0) {
+        let conflict = startDate > reservInSpot[0].startDate && endDate > reservInSpot[0].endDate ? 'Start Date' : 'End date'
         if (conflict === 'Start Date'){
             res.status(403).json(
                 {
