@@ -81,51 +81,51 @@ router.get('/', async (req, res) => {
             include: [
                 [
                     sequelize.fn('AVG', sequelize.col('Reviews.stars')), "avgRating"
-                ]
+                ],
+                [sequelize.literal("Images.url"), "previewImage"]
             ]
         },
         include: [
             { model: Review, attributes: [] },
             {
-                model: Image, attributes: ['url'],
+                model: Image, attributes:[],
                 where: {
                     previewImage: true
                 },
-                as: "previewImage"
             }
         ],
-         group: ['Spot.id', 'previewImage.id' ],
+         group: ['Spot.id' ],
     })
 
-    // res.json(spots)
-    const avgStars = await Review.findAll({
-        attributes: {
-            include: [
-                [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
-            ],
-            exclude: ['id', 'userId', 'spotId', 'review', 'stars', 'createdAt', 'updatedAt']
-        }, group: ['spotId']
-    })
+    res.json(spots)
+//     const avgStars = await Review.findAll({
+//         attributes: {
+//             include: [
+//                 [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
+//             ],
+//             exclude: ['id', 'userId', 'spotId', 'review', 'stars', 'createdAt', 'updatedAt']
+//         }, group: ['spotId']
+//     })
 
- for (i =0 ; i <spots.length; i++){
-    if (spots[i].previewImage.length === 0) {
-        spots[i].previewImage[0]={"url" :" "}
-     }
-    }
+// //  for (i =0 ; i <spots.length; i++){
+// //     if (spots[i].previewImage.length === 0) {
+// //         spots[i].previewImage[0]={"url" :" "}
+// //      }
+// //     }
 
-   let allSpots = spots.map(spot => places = {
+//    let allSpots = spots.map(spot => places = {
 
-            id: spot.id, ownerId: spot.ownerId,
-            address: spot.address, city: spot.city,
-            state: spot.state, country: spot.country,
-            lat: spot.lat, lng: spot.lng, name: spot.name,
-            description: spot.description, price: spot.price,
-            createAt: spot.createdAt, updateAt: spot.updatedAt,
-            avgRating: avgStars[0].dataValues.avgRating,
-            previewImage: spot.previewImage[0].url
+//             id: spot.id, ownerId: spot.ownerId,
+//             address: spot.address, city: spot.city,
+//             state: spot.state, country: spot.country,
+//             lat: spot.lat, lng: spot.lng, name: spot.name,
+//             description: spot.description, price: spot.price,
+//             createAt: spot.createdAt, updateAt: spot.updatedAt,
+//             avgRating: avgStars[0].dataValues.avgRating,
+//             previewImage: spot.previewImage[0].url
         
-    })
-    res.json(allSpots)
+//     })
+//     res.json(allSpots)
 })
 
 // Get all Spots owned by the Current User(55:28)
