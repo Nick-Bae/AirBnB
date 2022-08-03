@@ -142,7 +142,7 @@ router.get('/current', requireAuth, async (req, res) => {
         //             ]
         //         },
         include: [
-            { model: Image, as: 'previewImage', attributes: ['url'] },
+            { model: Image,  attributes: ['url'] },
             { model: Review, attributes: [] }],
     })
 
