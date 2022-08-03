@@ -539,18 +539,35 @@ router.post('/:spotId/bookings', async (req, res) => {
             ]
         }
     })
+   
+    // if (startDate > reservInSpot.startDate) let conflict = startDate
 
+    let conflict = startDate > reservInSpot[0].startDate ? 'Start Date' : 'End date'
     if (reservInSpot.length !== 0) {
-        res.status(403).json(
-            {
-                "message": "Sorry, this spot is already booked for the specified dates",
-                "statusCode": 403,
-                "errors": {
-                    "startDate": "Start date conflicts with an existing booking",
-                    "endDate": "End date conflicts with an existing booking"
+        if (conflict === 'Start Date'){
+            res.status(403).json(
+                {
+                    "message": "Sorry, this spot is already booked for the specified dates",
+                    "statusCode": 403,
+                    "errors": {
+                        "startDate": "Start date conflicts with an existing booking",
+                        // "endDate": "End date conflicts with an existing booking"
+                    }
                 }
-            }
-        )
+            )
+        } else {
+            res.status(403).json(
+                {
+                    "message": "Sorry, this spot is already booked for the specified dates",
+                    "statusCode": 403,
+                    "errors": {
+                        // "`startDate`": `${conflict} conflicts with an existing booking`,
+                        "endDate": "End date conflicts with an existing booking"
+                    }
+                }
+            )
+        }
+
     } else {
         const newBooking = await Booking.create({
             spotId: req.params.spotId,
