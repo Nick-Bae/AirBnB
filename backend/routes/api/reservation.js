@@ -185,7 +185,7 @@ router.delete('/:bookingId', async (req, res) => {
     } catch (err) {
         res.status(404)
         res.json({
-            "message": "Reservation couldn't be found",
+            "message": "Booking couldn't be found",
             "statusCode": 404
         })
     }
