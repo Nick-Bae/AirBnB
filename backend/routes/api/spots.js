@@ -88,14 +88,12 @@ router.get('/', async (req, res) => {
         },
         include: [
             { model: Image, attributes:['url'],
-                where: {
-                    previewImage: true
-                },
             },
             { model: Review, attributes: [] },
         ],
          group: ['Spot.id','Images.id' ],
     })
+res.json(spots)
 
     const Spots = spots.map(spot => places = {
         id: spot.id, ownerId: spot.ownerId,
@@ -107,7 +105,6 @@ router.get('/', async (req, res) => {
         avgRating: spot.dataValues.avgRating,
         previewImage: spot.Images[0].url
     })
-
 
     res.json(Spots)
 
@@ -165,9 +162,8 @@ router.get('/current', requireAuth, async (req, res) => {
             Spots[i].Images = {"url":"no image "}
         }
     }
-    // res.json(Spots)
+    res.json(Spots)
 
-    
     const spots = Spots.map(spot => places = {
         id: spot.id, ownerId: spot.ownerId,
         address: spot.address, city: spot.city,
