@@ -181,7 +181,7 @@ router.get('/current', requireAuth, async (req, res) => {
         description: spot.description, price: spot.price,
         createAt: spot.createdAt, updateAt: spot.updatedAt,
         avgRating: spot.dataValues.avgRating,
-        previewImage: spot.Images[0].url
+        // previewImage: spot.Images[0].url
     })
 
     // res.json(images[0].url)
