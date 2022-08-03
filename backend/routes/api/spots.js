@@ -145,6 +145,7 @@ router.get('/current', requireAuth, async (req, res) => {
             { model: Image,  attributes: ['url'] },
             { model: Review, attributes: [] }],
     })
+    // res.json(Spots)
 
     let avgStars = [];
     for (i = 0; i < Spots.length; i++) {
@@ -159,18 +160,18 @@ router.get('/current', requireAuth, async (req, res) => {
         })
         avgStars.push(revAvg[0])
     }
-    let images = [];
-    for (i = 0; i < Spots.length; i++) {
-        const image = await Image.findAll({
-            where: { spotId: Spots[i].id },
-            attributes: {
-                exclude: ['id', 'userId', 'spotId', 'review', 'stars', 'createdAt', 'updatedAt']
-            },
-        })
-        images.push(image[0])
-        // if (image === undefined) images.push({"url":"no image"})
-    }
-
+    // let images = [];
+    // for (i = 0; i < Spots.length; i++) {
+    //     const image = await Image.findAll({
+    //         where: { spotId: Spots[i].id },
+    //         attributes: {
+    //             exclude: ['id', 'userId', 'spotId', 'review', 'stars', 'createdAt', 'updatedAt']
+    //         },
+    //     })
+    //     images.push(image[0])
+    //     // if (image === undefined) images.push({"url":"no image"})
+    // }
+//   res.json(images)
     const spots = Spots.map(spot => places = {
         id: spot.id, ownerId: spot.ownerId,
         address: spot.address, city: spot.city,
@@ -178,11 +179,14 @@ router.get('/current', requireAuth, async (req, res) => {
         lat: spot.lat, lng: spot.lng, name: spot.name,
         description: spot.description, price: spot.price,
         createAt: spot.createdAt, updateAt: spot.updatedAt,
+        previewImage: spot.Images[0].url
     })
+
+    // res.json(images[0].url)
 
     for (i = 0; i < spots.length; i++) {
         spots[i].avgRating = avgStars[i].dataValues.avgRating;
-        spots[i].previewImage = images[i].url;
+        // spots[i].previewImage = images[i].url;
     }
 
     res.json({ Spots: spots })
