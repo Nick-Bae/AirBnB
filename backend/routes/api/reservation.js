@@ -173,7 +173,7 @@ router.delete('/:bookingId', async (req, res) => {
             })
         } else {
 
-            const deleteBook = await Booking.findByPk(req.params.reservationId)
+            const deleteBook = await Booking.findByPk(req.params.bookingId)
             deleteBook.destroy()
             res.status(200)
             res.json({
