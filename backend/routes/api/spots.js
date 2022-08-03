@@ -8,6 +8,7 @@ const { Op } = require("sequelize");
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
 const user = require('../../db/models/user');
+const spot = require('../../db/models/spot');
 const validateCreateSpot = [
     check('name')
         .exists({ checkFalsy: true })
@@ -86,18 +87,29 @@ router.get('/', async (req, res) => {
             ]
         },
         include: [
-            { model: Image, attributes:[],
+            { model: Image, attributes:['url'],
                 where: {
                     previewImage: true
                 },
-                duplicating:false
             },
             { model: Review, attributes: [] },
         ],
          group: ['Spot.id' ],
     })
 
-    res.json(spots)
+    const Spots = spots.map(spot => places = {
+        id: spot.id, ownerId: spot.ownerId,
+        address: spot.address, city: spot.city,
+        state: spot.state, country: spot.country,
+        lat: spot.lat, lng: spot.lng, name: spot.name,
+        description: spot.description, price: spot.price,
+        createAt: spot.createdAt, updateAt: spot.updatedAt,
+        avgRating: spot.dataValues.avgRating,
+        previewImage: spot.Images[0].url
+    })
+
+
+    res.json(Spots)
 
     // const avgStars = await Review.findAll({
     //     attributes: {
@@ -146,7 +158,16 @@ router.get('/current', requireAuth, async (req, res) => {
             { model: Review, attributes: [] }
         ], group: ['Spot.id','Images.id']
     })
+    // res.json(Spots)
+    // res.json(Spots[0].Images.length)
+    for (i=0; i<Spots.length; i++){
+        if (Spots[i].Images.length === 0) {
+            Spots[i].Images = {"url":"no image "}
+        }
+    }
+    // res.json(Spots)
 
+    
     const spots = Spots.map(spot => places = {
         id: spot.id, ownerId: spot.ownerId,
         address: spot.address, city: spot.city,
