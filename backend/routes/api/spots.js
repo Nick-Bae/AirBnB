@@ -179,7 +179,7 @@ router.get('/current', requireAuth, async (req, res) => {
         lat: spot.lat, lng: spot.lng, name: spot.name,
         description: spot.description, price: spot.price,
         createAt: spot.createdAt, updateAt: spot.updatedAt,
-        previewImage: spot.Images[0].url
+        // previewImage: spot.Images[0].url
     })
 
     // res.json(images[0].url)
