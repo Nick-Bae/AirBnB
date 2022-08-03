@@ -14,7 +14,7 @@ const validateReservation = [
 ]
 
 // ============ Get all of the Current User's Bookings =================
-router.get('/current', async (req, res) => {
+router.get('/current', requireAuth, async (req, res) => {
     const { user } = req
     // res.json(user.id)
     const reservations = await Booking.findAll({
@@ -44,11 +44,10 @@ router.get('/current', async (req, res) => {
     })
 
     res.json({ Bookings: bookings })
-    // res.json({Bookings:reservations})
 })
 
 //Get all Bookings for a Spot based on t{he Spot's id
-router.get('/spot/:spotId', async (req, res) => {
+router.get('/spot/:spotId/bookings', requireAuth, async (req, res) => {
     // try {
     //     const reservations = await Reservation.findAll({
     //         where : {spotId: req.params.spotId}
@@ -63,9 +62,10 @@ router.get('/spot/:spotId', async (req, res) => {
     //     )
     // }
     const reservations = await Booking.findAll({
-        where: { spotId: req.params.spotId }
+        where: { spotId: req.params.spotId },
+        attributes: {exclude:['userId']}
     })
-
+    res.json(reservations)
     if (reservations.length === 0) {
         // if (!reservations){
         res.status(404).json({

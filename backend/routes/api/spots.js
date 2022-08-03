@@ -1,7 +1,7 @@
 const express = require('express');
 
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
-const { User, Spot, Review, sequelize, Image } = require('../../db/models');
+const { User, Spot, Review, sequelize, Image, Booking } = require('../../db/models');
 
 const router = express.Router();
 const { Op } = require("sequelize");
@@ -480,5 +480,36 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res) =>
             res.json(newReview)
         }
 })
+
+//Get all Bookings for a Spot based on t{he Spot's id
+router.get('/:spotId/bookings', requireAuth, async (req, res) => {
+   
+    const {user}=req;
+    const noUser = await Booking.findAll({
+        where: { spotId: req.params.spotId },
+        attributes: {exclude:['id','userId','createdAt','updatedAt']}
+    })
+    const currentUser = await Booking.findAll({
+        where: { spotId: req.params.spotId },
+    })
+    const response = currentUser.map(booking=>booking ={
+        User: {id:user.id, firstName:user.firstName, lastName:user.lastName},
+        id: booking.id, spotId: booking.spotId, userId: booking.userId,
+        startDate: booking.startDate, endDate:booking.endDate,
+        createdAt: booking.createdAt, updatedAt: booking.updatedAt
+    })
+    if (currentUser.length === 0) {
+            res.status(404).json({
+                "message": "Spot couldn't be found",
+                "statusCode": 404
+            })
+    } else if (user.id === currentUser[0].userId){
+        res.json({ Bookings: response })
+    }  else {
+        res.json({Bookings:noUser})
+    } 
+       
+})
+
 
 module.exports = router;
