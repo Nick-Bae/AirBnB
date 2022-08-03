@@ -86,12 +86,12 @@ router.get('/', async (req, res) => {
             ]
         },
         include: [
-            { model: Review, attributes: [] },
             { model: Image, attributes:[],
                 where: {
                     previewImage: true
                 },
-            }
+            },
+            { model: Review, attributes: [] },
         ],
          group: ['Spot.id' ],
     })
