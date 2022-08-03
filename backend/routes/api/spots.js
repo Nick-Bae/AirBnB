@@ -146,21 +146,33 @@ router.get('/current', requireAuth, async (req, res) => {
             { model: Review, attributes: [] }
         ], group: ['Spot.id','Images.id']
     })
+
+    const spots = Spots.map(spot => places = {
+        id: spot.id, ownerId: spot.ownerId,
+        address: spot.address, city: spot.city,
+        state: spot.state, country: spot.country,
+        lat: spot.lat, lng: spot.lng, name: spot.name,
+        description: spot.description, price: spot.price,
+        createAt: spot.createdAt, updateAt: spot.updatedAt,
+        avgRating: spot.dataValues.avgRating,
+        previewImage: spot.Images[0].url
+    })
+    res.json({ Spots: spots })
     // res.json(Spots)
 
-    let avgStars = [];
-    for (i = 0; i < Spots.length; i++) {
-        const revAvg = await Review.findAll({
-            where: { spotId: Spots[i].id },
-            attributes: {
-                include: [
-                    [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
-                ],
-                exclude: ['id', 'userId', 'spotId', 'review', 'stars', 'createdAt', 'updatedAt']
-            },
-        })
-        avgStars.push(revAvg[0])
-    }
+    // let avgStars = [];
+    // for (i = 0; i < Spots.length; i++) {
+    //     const revAvg = await Review.findAll({
+    //         where: { spotId: Spots[i].id },
+    //         attributes: {
+    //             include: [
+    //                 [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
+    //             ],
+    //             exclude: ['id', 'userId', 'spotId', 'review', 'stars', 'createdAt', 'updatedAt']
+    //         },
+    //     })
+    //     avgStars.push(revAvg[0])
+    // }
     // let images = [];
     // for (i = 0; i < Spots.length; i++) {
     //     const image = await Image.findAll({
@@ -173,16 +185,7 @@ router.get('/current', requireAuth, async (req, res) => {
     //     // if (image === undefined) images.push({"url":"no image"})
     // }
 //   res.json(Spots)
-    const spots = Spots.map(spot => places = {
-        id: spot.id, ownerId: spot.ownerId,
-        address: spot.address, city: spot.city,
-        state: spot.state, country: spot.country,
-        lat: spot.lat, lng: spot.lng, name: spot.name,
-        description: spot.description, price: spot.price,
-        createAt: spot.createdAt, updateAt: spot.updatedAt,
-        avgRating: spot.dataValues.avgRating,
-        // previewImage: spot.Images[0].url
-    })
+   
 
     // res.json(images[0].url)
 
@@ -191,7 +194,7 @@ router.get('/current', requireAuth, async (req, res) => {
         // spots[i].previewImage = images[i].url;
     // }
 
-    res.json({ Spots: spots })
+   
 })
 
 // Add Query Filters to Get All Spots
