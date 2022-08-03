@@ -243,7 +243,6 @@ router.get('/:spotId', async (req, res) => {
             "statusCode": 404
         })
     }
-    // res.json(detail)
     const revAvg = await Review.findAll({
         where: { spotId: req.params.spotId },
         attributes: {
@@ -251,8 +250,9 @@ router.get('/:spotId', async (req, res) => {
                 [sequelize.fn('COUNT', sequelize.col("review")), "numReviews"],
                 [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
             ]
-        },
+        }, group: ['Review.id' ]
     })
+
     const image = await Image.findOne({
         where: { spotId: req.params.spotId },
         atrributes: { exclude: ['previewImage', 'spotId', 'reviewId', 'userId'] }
