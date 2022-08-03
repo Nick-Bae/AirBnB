@@ -54,7 +54,7 @@ app.use((_req,_res,next)=> {
 
 app.use((err, _req,_res, next) => {
   if (err instanceof ValidationError) {
-    let errorName = 'email'
+    // let errorName = 'email'
     if(err.errors[0].path === 'username'){
     
       _res.status(403).json({

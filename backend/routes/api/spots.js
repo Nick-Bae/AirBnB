@@ -7,6 +7,7 @@ const router = express.Router();
 const { Op } = require("sequelize");
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
+const user = require('../../db/models/user');
 const validateCreateSpot = [
     check('name')
         .exists({ checkFalsy: true })
@@ -514,8 +515,8 @@ router.get('/:spotId/bookings', requireAuth, async (req, res) => {
 
 // =============Create a Booking from a Spot based on the Spot's id=============
 router.post('/:spotId/bookings', async (req, res) => {
-  
-    const { spotId, startDate, endDate } = req.body
+    const {user}=req;
+    const { startDate, endDate } = req.body
     const spot = await Spot.findByPk(req.params.spotId)
     if (spot === null) res.status(404).json({
         "message": "Spot couldn't be found",
@@ -523,7 +524,7 @@ router.post('/:spotId/bookings', async (req, res) => {
     })
     const reservInSpot = await Booking.findAll({
         where: {
-            spotId: spotId,
+            spotId: req.params.spotId,
             [Op.or]: [
                 {
                     startDate: {
@@ -553,7 +554,7 @@ router.post('/:spotId/bookings', async (req, res) => {
     } else {
         const newBooking = await Booking.create({
             spotId: req.params.spotId,
-            userId: req.params.userId,
+            userId: user.id,
             startDate, endDate
         })
         res.json(newBooking)
