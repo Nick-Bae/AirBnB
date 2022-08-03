@@ -143,7 +143,8 @@ router.get('/current', requireAuth, async (req, res) => {
                 },
         include: [
             { model: Image,  attributes: ['url'] },
-            { model: Review, attributes: [] }],
+            { model: Review, attributes: [] }
+        ], group: ['Spot.id']
     })
     // res.json(Spots)
 
