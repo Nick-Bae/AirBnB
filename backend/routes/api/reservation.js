@@ -77,59 +77,7 @@ router.get('/spot/:spotId/bookings', requireAuth, async (req, res) => {
     }
 })
 
-// Create a Booking from a Spot based on the Spot's id
-router.post('/spot/:spotId/user/:userId', async (req, res) => {
-    // try{
-    const { spotId, checkIn, checkOut } = req.body
-    const spot = await Spot.findByPk(req.params.spotId)
-    if (spot === null) res.status(404).json({
-        "message": "Spot couldn't be found",
-        "statusCode": 404
-    })
-    const reservInSpot = await Booking.findAll({
-        where: {
-            spotId: spotId,
-            [Op.or]: [
-                {
-                    checkIn: {
-                        [Op.between]: [checkIn, checkOut]
-                    }
-                },
-                {
-                    checkOut: {
-                        [Op.between]: [checkIn, checkOut]
-                    }
-                }
-            ]
-        }
-    })
 
-    if (reservInSpot.length !== 0) {
-        res.status(403).json(
-            {
-                "message": "Sorry, this spot is already booked for the specified dates",
-                "statusCode": 403,
-                "errors": {
-                    "startDate": "Start date conflicts with an existing booking",
-                    "endDate": "End date conflicts with an existing booking"
-                }
-            }
-        )
-    } else {
-        const newBooking = await Booking.create({
-            spotId: req.params.spotId,
-            userId: req.params.userId,
-            checkIn, checkOut
-        })
-        res.json(newBooking)
-    }
-    // } catch (err){
-    //     res.json({
-    //             "message": "Spot couldn't be found",
-    //             "statusCode": 404
-    //           })
-    // }
-})
 
 //Edit a Booking
 router.put('/:reservationId', async (req, res) => {

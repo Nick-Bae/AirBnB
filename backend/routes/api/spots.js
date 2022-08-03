@@ -266,7 +266,7 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
 
 })
 
-//Get details of a Spot from an id (56:23)
+//=================Get details of a Spot from an id (56:23)==============
 router.get('/:spotId', async (req, res) => {
 
     let detail = await Spot.findByPk(req.params.spotId)
@@ -313,7 +313,7 @@ router.get('/:spotId', async (req, res) => {
     
 })
 
-//Create a Spot
+//===============Create a Spot================
 router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
     const { user } = req;
 
@@ -360,7 +360,7 @@ router.post('/:spotId/image', requireAuth, async (req, res) => {
     }
 })
 
-//Edit a Spot
+//==============Edit a Spot===================
 router.put('/:spotId', requireAuth, validateCreateSpot, async (req, res) => {
     const { user } = req;
     const spot = await Spot.findByPk(req.params.spotId)
@@ -394,7 +394,7 @@ router.put('/:spotId', requireAuth, validateCreateSpot, async (req, res) => {
     // } catch(err){
     // }
 })
-//Delete a Spot
+//==============Delete a Spot===================
 router.delete('/:spotId', restoreUser, async (req, res) => {
     // try {
     const { user } = req;
@@ -422,7 +422,7 @@ router.delete('/:spotId', restoreUser, async (req, res) => {
 
 
 
-// Get all Reviews by a Spot's id
+// ===========Get all Reviews by a Spot's id============
 router.get('/:spotId/reviews',requireAuth, async (req, res) => {
     const reviewSpot = await Review.findAll({
         where: { spotId: req.params.spotId },
@@ -481,7 +481,7 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res) =>
         }
 })
 
-//Get all Bookings for a Spot based on t{he Spot's id
+//==========Get all Bookings for a Spot based on t{he Spot's id============
 router.get('/:spotId/bookings', requireAuth, async (req, res) => {
    
     const {user}=req;
@@ -511,5 +511,53 @@ router.get('/:spotId/bookings', requireAuth, async (req, res) => {
        
 })
 
+
+// =============Create a Booking from a Spot based on the Spot's id=============
+router.post('/spot/:spotId/bookings', async (req, res) => {
+  
+    const { spotId, startDate, endDate } = req.body
+    const spot = await Spot.findByPk(req.params.spotId)
+    if (spot === null) res.status(404).json({
+        "message": "Spot couldn't be found",
+        "statusCode": 404
+    })
+    const reservInSpot = await Booking.findAll({
+        where: {
+            spotId: spotId,
+            [Op.or]: [
+                {
+                    startDate: {
+                        [Op.between]: [startDate, endDate]
+                    }
+                },
+                {
+                    endDate: {
+                        [Op.between]: [startDate, endDate]
+                    }
+                }
+            ]
+        }
+    })
+
+    if (reservInSpot.length !== 0) {
+        res.status(403).json(
+            {
+                "message": "Sorry, this spot is already booked for the specified dates",
+                "statusCode": 403,
+                "errors": {
+                    "startDate": "Start date conflicts with an existing booking",
+                    "endDate": "End date conflicts with an existing booking"
+                }
+            }
+        )
+    } else {
+        const newBooking = await Booking.create({
+            spotId: req.params.spotId,
+            userId: req.params.userId,
+            startDate, endDate
+        })
+        res.json(newBooking)
+    }
+})
 
 module.exports = router;
