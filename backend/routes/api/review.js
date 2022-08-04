@@ -17,7 +17,7 @@ const validateReview = [
 ]
 
 
-//==========Get all Reviews of the Current User==========
+//==============Get all Reviews of the Current User=============
 router.get('/current', requireAuth, async (req, res) => {
     const { user } = req;
 
@@ -29,7 +29,7 @@ router.get('/current', requireAuth, async (req, res) => {
                 attributes: 
                 { exclude: ["description","createdAt", "updatedAt"] } },
             // {model:Image, attributes:['id','imageabledId','url']}
-            {model:Image, attributes:['id','url']}
+            {model:Image, attributes:['id',['spotId','imageableId'],'url']}
         ]
     })
     res.json(reviews)
