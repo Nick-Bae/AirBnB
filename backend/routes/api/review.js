@@ -10,6 +10,11 @@ const validateReview = [
     check('review')
         .exists({ checkFalsy: true })
         .withMessage('review text is required'),
+    check('stars').custom((value)=> {
+        if (value >5 || value<1) {
+          throw new Error('Stars must be an integer from 1 to 5');
+        }
+    }),
     // check('userId')
     //     .exists({checkFalsy:true})
     //     .withMessage('User already has a review for this spot'),
@@ -53,46 +58,6 @@ router.get('/current', requireAuth, async (req, res) => {
 //     }
 // })
 
-//Edit a Review
-router.put('/:reviewId', requireAuth, validateReview, async (req, res) => {
-    const { review } = req.body
-    const {user}=req
-    const editReview = await Review.findByPk(req.params.reviewId)
-    const reviewId = req.params.reviewId
-    // res.json(editReview)
-    if (!editReview) {
-        res.status(404).json({
-            "message": "Review couldn't be found",
-            "statusCode": 404
-        })
-    } else if (user.id === parseInt(editReview.userId)) {
-        editReview.update({ review })
-        res.json(editReview)
-    } else {
-        res.status(401).json("Unauthorized User")
-    }
-})
-
-//Delete a Review
-router.delete('/:reviewId', requireAuth, async (req, res) => {
-    // try {
-        const {user}=req
-    const deleteReview = await Review.findByPk(req.params.reviewId)
-    if (!deleteReview) {
-        res.status(404).json({
-            "message": "Review couldn't be found",
-            "statusCode": 404
-        })
-    } else if (user.id === parseInt(deleteReview.userId)){
-        deleteReview.destroy()
-        res.json({
-            "message": "Successfully deleted",
-            "statusCode": 200
-        })
-    } else {
-        res.status(401).json("Unauthorized User")
-    }
-})
 
 // Add an Image to a Review based on the Review's id
 router.post('/:reviewId/images', async (req, res) => {
@@ -154,4 +119,47 @@ for (i=0; i < countImage.length; i++){
         res.json(response)
     }
 })
+
+//========================  Edit a Review  ===================
+router.put('/:reviewId', requireAuth, validateReview, async (req, res) => {
+    const { review,stars } = req.body
+    const {user}=req
+    const editReview = await Review.findByPk(req.params.reviewId)
+    const reviewId = req.params.reviewId
+    // res.json(editReview)
+    if (!editReview) {
+        res.status(404).json({
+            "message": "Review couldn't be found",
+            "statusCode": 404
+        })
+    } else if (user.id === parseInt(editReview.userId)) {
+        editReview.update({ review, stars })
+        res.json(editReview)
+    } else {
+        res.status(401).json("Unauthorized User")
+    }
+})
+
+//Delete a Review
+router.delete('/:reviewId', requireAuth, async (req, res) => {
+    // try {
+        const {user}=req
+    const deleteReview = await Review.findByPk(req.params.reviewId)
+    if (!deleteReview) {
+        res.status(404).json({
+            "message": "Review couldn't be found",
+            "statusCode": 404
+        })
+    } else if (user.id === parseInt(deleteReview.userId)){
+        deleteReview.destroy()
+        res.json({
+            "message": "Successfully deleted",
+            "statusCode": 200
+        })
+    } else {
+        res.status(401).json("Unauthorized User")
+    }
+})
+
+
 module.exports = router;

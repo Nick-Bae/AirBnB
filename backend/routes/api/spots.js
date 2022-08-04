@@ -94,7 +94,7 @@ router.get('/', async (req, res) => {
         ],
         group: ['Spot.id', 'Images.id'],
     })
-    
+
     let Spots = [];
 
     for (i = 0; i < spots.length; i++) {
@@ -142,7 +142,7 @@ router.get('/current', requireAuth, async (req, res) => {
             { model: Review, attributes: [] }
         ], group: ['Spot.id', 'Images.id']
     })
-   
+
     let Spots = [];
 
     for (i = 0; i < spots.length; i++) {
@@ -175,7 +175,7 @@ router.get('/current', requireAuth, async (req, res) => {
     res.json({ Spots })
     // res.json(Spots)
 })
-    // 
+// 
 
 //================ Add Query Filters to Get All Spots==========================
 router.get('/', validatePage, validatePrice, async (req, res, next) => {
@@ -291,7 +291,7 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
 //============== Add an Image to a Spot based on the Spot's id
 router.post('/:spotId/images', requireAuth, async (req, res) => {
     const { user } = req;
-    const {url} = req;
+    const { url } = req;
     const spot = await Spot.findByPk(req.params.spotId);
     if (!spot) {
         res.json({
@@ -396,7 +396,7 @@ const validateReview = [
         .exists({ checkFalsy: true })
         .withMessage('comment text is required'),
     check('stars')
-        .exists({checkFalsy:true})
+        .exists({ checkFalsy: true })
         .withMessage('Stars must be an integer from 1 to 5'),
     handleValidationErrors
 ]
@@ -461,12 +461,37 @@ router.get('/:spotId/bookings', requireAuth, async (req, res) => {
 
 })
 
+// const validateBookingDate = [
+//     check('endDate').custom((value)=>{
+//         if (value< )
 
+// }),
+//     handleValidationErrors
+// ]
+
+const validateBookingDate = (req, res, next) => {
+    const { startDate, endDate } = req.body
+    // res.json(startDate)
+    if (startDate > endDate) {
+        const error = new Error;
+        error.page = "endDate cannot be on or before startDate"
+        res.status(400).json({
+            "message": "Validation Error",
+            "statusCode": 400,
+            error
+        })
+        next(err)
+    }
+    next()
+}
 // =============Create a Booking from a Spot based on the Spot's id=============
 router.post('/:spotId/bookings', requireAuth, async (req, res) => {
     const { user } = req;
     const { startDate, endDate } = req.body
     const spot = await Spot.findByPk(req.params.spotId)
+    const duplicateBooking = await Booking.findOne({
+        where: { userId: user.id, startDate: startDate, endDate: endDate }
+    })
     // res.json(spot)
 
     if (spot === null) {
@@ -474,8 +499,18 @@ router.post('/:spotId/bookings', requireAuth, async (req, res) => {
             "message": "Spot couldn't be found",
             "statusCode": 404
         })
+    } else if (startDate > endDate) {
+        const error = new Error;
+        error.endDate = "endDate cannot be on or before startDate"
+        res.status(400).json({
+            "message": "Validation Error",
+            "statusCode": 400,
+            error
+        })
     } else if (spot.ownerId === user.id) {
         res.status(404).json("Cannot book this spot. Spot must NOT belong to the current user ")
+    } else if (duplicateBooking) {
+        res.status(404).json("You already have a booking on the date")
     }
     const reservInSpot = await Booking.findAll({
         where: {
