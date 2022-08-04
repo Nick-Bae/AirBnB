@@ -87,24 +87,55 @@ router.get('/', async (req, res) => {
             ]
         },
         include: [
-            { model: Image, attributes:['url'],
+            { model: Image, attributes:['url','previewImage'],
             },
             { model: Review, attributes: [] },
         ],
          group: ['Spot.id','Images.id' ],
     })
-res.json(spots)
+    // res.json(spots)
+// res.json(spots[1].Images[0].url)
+let Spots=[];
 
-    const Spots = spots.map(spot => places = {
-        id: spot.id, ownerId: spot.ownerId,
-        address: spot.address, city: spot.city,
-        state: spot.state, country: spot.country,
-        lat: spot.lat, lng: spot.lng, name: spot.name,
-        description: spot.description, price: spot.price,
-        createAt: spot.createdAt, updateAt: spot.updatedAt,
-        avgRating: spot.dataValues.avgRating,
-        previewImage: spot.Images[0].url
-    })
+for (i=0; i<spots.length; i++){
+    if (spots[i].Images[0]) {
+        spots[i]= {
+            id: spots[i].id, ownerId: spots[i].ownerId,
+        address: spots[i].address, city: spots[i].city,
+        state: spots[i].state, country: spots[i].country,
+        lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
+        description: spots[i].description, price: spots[i].price,
+        createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
+        avgRating: spots[i].dataValues.avgRating,
+        previewImage: spots[i].Images[0].url
+        }
+        Spots.push(spots[i])
+} else {
+    spots[i] = {
+        id: spots[i].id, ownerId: spots[i].ownerId,
+    address: spots[i].address, city: spots[i].city,
+    state: spots[i].state, country: spots[i].country,
+    lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
+    description: spots[i].description, price: spots[i].price,
+    createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
+    avgRating: spots[i].dataValues.avgRating,
+    // previewImage: spots[i].Images[0].url
+    }
+    Spots.push(spots[i])
+}
+}
+    // Spots = spots.map(spot => places = {
+    //     id: spot.id, ownerId: spot.ownerId,
+    //     address: spot.address, city: spot.city,
+    //     state: spot.state, country: spot.country,
+    //     lat: spot.lat, lng: spot.lng, name: spot.name,
+    //     description: spot.description, price: spot.price,
+    //     createAt: spot.createdAt, updateAt: spot.updatedAt,
+    //     avgRating: spot.dataValues.avgRating,
+    //     previewImage: spot.Images[0].url
+    // })
+
+
 
     res.json(Spots)
 
