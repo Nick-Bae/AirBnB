@@ -2,7 +2,7 @@ const express = require('express');
 
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
 const { User, Spot, Review, sequelize, Image } = require('../../db/models');
-
+const {Op}=require("sequelize")
 const router = express.Router();
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
@@ -100,17 +100,33 @@ router.post('/:reviewId/images', async (req, res) => {
     const { url } = req.body;
     const review = await Review.findByPk(req.params.reviewId);
     const countImage = await Image.findAll({
-        attributes: {
-        include:    [
-               [sequelize.fn('COUNT', sequelize.col('spotId')),'countImage']
-           ],
-
+        // where: {countImage: { [Op.gt]:10}},
+        attributes: [
+            [sequelize.fn('COUNT', sequelize.col('spotId')),'countImage']        
+        ],
         //    group:[Image.spotId]
-        },
-      
+        group:['Image.spotId']
+        
     })
-    // console.log(countImage)
+
+    // res.json(countImage)
 // res.json(countImage[0].dataValues.countImage)
+
+// const checkMaximumImage = countImage.map(function(image){
+//     if (image.dataValues.countImage>10) 
+//    return false
+// })
+let checkMaximumImage = 'true';
+// = countImage.map(function(image){
+//     if (image.dataValues.countImage>10) 
+//    return  false
+//    return false
+// })
+for (i=0; i < countImage.length; i++){
+    if (countImage[i].dataValues.countImage > 10)  {checkMaximumImage = 'false'} break
+} 
+// res.json(checkMaximumImage)
+
     if (!review) {
         res.json({
             "message": "Review couldn't be found",
@@ -118,7 +134,7 @@ router.post('/:reviewId/images', async (req, res) => {
         })
     } else if (user === null || user.id !== parseInt(review.userId)) {
         res.status(403).json("No permission")
-    } else if (countImage[0].dataValues.countImage > 10) {
+    } else if (checkMaximumImage === 'false') {
         res.status(403).json({
             "message": "Maximum number of images for this resource was reached",
             "statusCode": 403
