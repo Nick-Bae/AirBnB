@@ -26,11 +26,11 @@ router.get('/current', requireAuth, async (req, res) => {
                 where: {
                     previewImage: true
                 },
-                
+
             }
         }
     });
-    
+
     const bookings = reservations.map(booking => place = {
         id: booking.id, spotId: booking.spotId,
         Spot: {
@@ -63,7 +63,7 @@ router.get('/spot/:spotId/bookings', requireAuth, async (req, res) => {
     // }
     const reservations = await Booking.findAll({
         where: { spotId: req.params.spotId },
-        attributes: {exclude:['userId']}
+        attributes: { exclude: ['userId'] }
     })
     res.json(reservations)
     if (reservations.length === 0) {
@@ -84,7 +84,7 @@ router.put('/:bookingId', async (req, res) => {
     const { startDate, endDate } = req.body
     const editBooking = await Booking.findByPk(req.params.bookingId)
     let today = new Date().toISOString().slice(0, 10)
-    
+
     if (editBooking === null) {
         res.json({
             "message": "Booking couldn't be found",
@@ -110,24 +110,24 @@ router.put('/:bookingId', async (req, res) => {
         }
     })
 
-    if (endDate < startDate){
+    if (endDate < startDate) {
         res.status(400).json({
             "message": "Validation error",
             "statusCode": 400,
             "errors": {
-              "endDate": "endDate cannot come before startDate"
+                "endDate": "endDate cannot come before startDate"
             }
-          })
-    } else if (editBooking.endDate < today){
+        })
+    } else if (editBooking.endDate < today) {
         res.status(403).json(
             {
                 "message": "Past bookings can't be modified",
                 "statusCode": 403
-              }
+            }
         )
     } else if (reservInSpot.length !== 0) {
         let conflict = startDate > reservInSpot[0].startDate && endDate > reservInSpot[0].endDate ? 'Start Date' : 'End date'
-        if (conflict === 'Start Date'){
+        if (conflict === 'Start Date') {
             res.status(403).json(
                 {
                     "message": "Sorry, this spot is already booked for the specified dates",
@@ -161,18 +161,23 @@ router.put('/:bookingId', async (req, res) => {
 })
 
 //Delete a Booking
-router.delete('/:bookingId', async (req, res) => {
+router.delete('/:bookingId', requireAuth, async (req, res) => {
+
     try {
         const date = await Booking.findByPk(req.params.bookingId, {
         })
         let today = new Date().toISOString().slice(0, 10)
+        const spot = await Spot.findOne({
+            where: { id: date.spotId }
+        })
+        const { user } = req;
+        // res.json(user.id)
         if (date.startDate < today) {
             res.json({
                 "message": "Bookings that have been started can't be deleted",
                 "statusCode": 400
             })
-        } else {
-
+        } else if (user.id === parseInt(date.userId) || user.id === spot.ownerId) {
             const deleteBook = await Booking.findByPk(req.params.bookingId)
             deleteBook.destroy()
             res.status(200)
@@ -180,6 +185,9 @@ router.delete('/:bookingId', async (req, res) => {
                 "message": "Successfully deleted",
                 "statusCode": 200
             })
+        } else {
+            res.json("Booking must belong to the current user or the Spot must belong to the current user")
+
         }
 
     } catch (err) {
