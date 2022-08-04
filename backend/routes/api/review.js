@@ -95,14 +95,22 @@ router.delete('/:reviewId', requireAuth, async (req, res) => {
 })
 
 // Add an Image to a Review based on the Review's id
-router.post('/:reviewId/image', async (req, res) => {
+router.post('/:reviewId/images', async (req, res) => {
     const { user } = req;
     const { url } = req.body;
     const review = await Review.findByPk(req.params.reviewId);
-    const countReview = await Image.count({
-        //   col: 'spotId'
-    })
+    const countImage = await Image.findAll({
+        attributes: {
+        include:    [
+               [sequelize.fn('COUNT', sequelize.col('spotId')),'countImage']
+           ],
 
+        //    group:[Image.spotId]
+        },
+      
+    })
+    // console.log(countImage)
+// res.json(countImage[0].dataValues.countImage)
     if (!review) {
         res.json({
             "message": "Review couldn't be found",
@@ -110,19 +118,24 @@ router.post('/:reviewId/image', async (req, res) => {
         })
     } else if (user === null || user.id !== parseInt(review.userId)) {
         res.status(403).json("No permission")
+    } else if (countImage[0].dataValues.countImage > 10) {
+        res.status(403).json({
+            "message": "Maximum number of images for this resource was reached",
+            "statusCode": 403
+          })
     } else {
         const addReviewImage = await Image.create({
-            imageableId: user.id,
-            imageableType: "Review",
-            url
+            imageableId: review.spotId,
+            url,
+            test:"test",
+            spotId: review.spotId
         })
-        res.json(
-            // id:addReviewImage.id,
-            // imageableId: 
-            // imageableType: addReviewImage.type,
-            // url:addReviewImage.url
-            addReviewImage
-        )
+        const response = {
+            id: addReviewImage.id,
+            imageableId: addReviewImage.spotId,
+            url: addReviewImage.url
+        }
+        res.json(response)
     }
 })
 module.exports = router;

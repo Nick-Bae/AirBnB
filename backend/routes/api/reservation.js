@@ -26,18 +26,18 @@ router.get('/current', requireAuth, async (req, res) => {
                 where: {
                     previewImage: true
                 },
-                as: "previewImage"
+                
             }
         }
     });
-    const image = await Image.find
+    
     const bookings = reservations.map(booking => place = {
         id: booking.id, spotId: booking.spotId,
         Spot: {
             address: booking.Spot.address, city: booking.Spot.city,
             state: booking.Spot.state, country: booking.Spot.country,
             lat: booking.Spot.lat, lng: booking.Spot.lng, name: booking.Spot.name,
-            price: booking.Spot.price, previewImage: booking.Spot.previewImage[0].url
+            price: booking.Spot.price, previewImage: booking.Spot.Images[0].url
         },
         userId: booking.userId, startDate: booking.startDate, endDate: booking.endDate,
         createdAt: booking.createdAt, updatedAt: booking.updatedAt

@@ -395,14 +395,14 @@ const validateReview = [
     check('review')
         .exists({ checkFalsy: true })
         .withMessage('comment text is required'),
-    // check('userId')
-    //     .exists({checkFalsy:true})
-    //     .withMessage('User already has a review for this spot'),
+    check('stars')
+        .exists({checkFalsy:true})
+        .withMessage('Stars must be an integer from 1 to 5'),
     handleValidationErrors
 ]
 
 //==========Create a Review for a Spot based on the Spot's id=====================
-router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res) => {
+router.post('/:spotId/reviews', requireAuth, restoreUser, validateReview, async (req, res) => {
     const { user } = req
     const { review, stars } = req.body
     const isUserReview = await Review.findOne({
@@ -411,7 +411,6 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res) =>
             spotId: req.params.spotId
         }
     })
-    // res.json(isUserReview)
     const spot = await Spot.findByPk(req.params.spotId)
 
     if (isUserReview) {
