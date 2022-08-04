@@ -74,7 +74,7 @@ const validatePrice = (req, res, next) => {
     next()
 };
 
-// Get all Spots
+// =====================Get all Spots=========================
 router.get('/', async (req, res) => {
 
     const spots = await Spot.findAll({
@@ -127,7 +127,7 @@ router.get('/', async (req, res) => {
     res.json(Spots)
 })
 
-// Get all Spots owned by the Current User(55:28)
+// ===============Get all Spots owned by the Current User(55:28)==============
 router.get('/current', requireAuth, async (req, res) => {
     const { user } = req;
     const spots = await Spot.findAll({
@@ -175,44 +175,9 @@ router.get('/current', requireAuth, async (req, res) => {
     res.json({ Spots })
     // res.json(Spots)
 })
-    // let avgStars = [];
-    // for (i = 0; i < Spots.length; i++) {
-    //     const revAvg = await Review.findAll({
-    //         where: { spotId: Spots[i].id },
-    //         attributes: {
-    //             include: [
-    //                 [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
-    //             ],
-    //             exclude: ['id', 'userId', 'spotId', 'review', 'stars', 'createdAt', 'updatedAt']
-    //         },
-    //     })
-    //     avgStars.push(revAvg[0])
-    // }
-    // let images = [];
-    // for (i = 0; i < Spots.length; i++) {
-    //     const image = await Image.findAll({
-    //         where: { spotId: Spots[i].id },
-    //         attributes: {
-    //             exclude: ['id', 'userId', 'spotId', 'review', 'stars', 'createdAt', 'updatedAt']
-    //         },
-    //     })
-    //     images.push(image[0])
-    //     // if (image === undefined) images.push({"url":"no image"})
-    // }
-    //   res.json(Spots)
+    // 
 
-
-    // res.json(images[0].url)
-
-    // for (i = 0; i < spots.length; i++) {
-    //     spots[i].avgRating = avgStars[i].dataValues.avgRating;
-    // spots[i].previewImage = images[i].url;
-    // }
-
-
-// })
-
-// Add Query Filters to Get All Spots
+//================ Add Query Filters to Get All Spots==========================
 router.get('/', validatePage, validatePrice, async (req, res, next) => {
     //page
 
@@ -324,9 +289,9 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
 })
 
 //============== Add an Image to a Spot based on the Spot's id
-router.post('/:spotId/image', requireAuth, async (req, res) => {
-    const { user } = req
-    const { url } = req.body
+router.post('/:spotId/images', requireAuth, async (req, res) => {
+    const { user } = req;
+    const {url} = req;
     const spot = await Spot.findByPk(req.params.spotId);
     if (!spot) {
         res.json({
@@ -343,7 +308,7 @@ router.post('/:spotId/image', requireAuth, async (req, res) => {
         })
         res.json({
             id: newImage.id,
-            imageableType: newImage.type,
+            imageableId: newImage.spotId,
             url: newImage.url
         });
     }
