@@ -25,7 +25,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull:false
     },
     review: DataTypes.STRING,
-    stars: DataTypes.DECIMAL(1,1),
+    stars: {
+      type:DataTypes.DECIMAL(1,1),
+      defaultValue: 0
+    },
   }, {
     sequelize,
     modelName: 'Review',

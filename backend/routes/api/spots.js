@@ -87,127 +87,94 @@ router.get('/', async (req, res) => {
             ]
         },
         include: [
-            { model: Image, attributes:['url','previewImage'],
+            {
+                model: Image, attributes: ['url', 'previewImage'],
             },
             { model: Review, attributes: [] },
         ],
-         group: ['Spot.id','Images.id' ],
+        group: ['Spot.id', 'Images.id'],
     })
-    // res.json(spots)
-// res.json(spots[1].Images[0].url)
-let Spots=[];
+    
+    let Spots = [];
 
-for (i=0; i<spots.length; i++){
-    if (spots[i].Images[0]) {
-        spots[i]= {
-            id: spots[i].id, ownerId: spots[i].ownerId,
-        address: spots[i].address, city: spots[i].city,
-        state: spots[i].state, country: spots[i].country,
-        lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
-        description: spots[i].description, price: spots[i].price,
-        createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
-        avgRating: spots[i].dataValues.avgRating,
-        previewImage: spots[i].Images[0].url
+    for (i = 0; i < spots.length; i++) {
+        if (spots[i].Images[0]) {
+            spots[i] = {
+                id: spots[i].id, ownerId: spots[i].ownerId,
+                address: spots[i].address, city: spots[i].city,
+                state: spots[i].state, country: spots[i].country,
+                lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
+                description: spots[i].description, price: spots[i].price,
+                createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
+                avgRating: spots[i].dataValues.avgRating,
+                previewImage: spots[i].Images[0].url
+            }
+            Spots.push(spots[i])
+        } else {
+            spots[i] = {
+                id: spots[i].id, ownerId: spots[i].ownerId,
+                address: spots[i].address, city: spots[i].city,
+                state: spots[i].state, country: spots[i].country,
+                lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
+                description: spots[i].description, price: spots[i].price,
+                createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
+                avgRating: spots[i].dataValues.avgRating,
+                // previewImage: spots[i].Images[0].url
+            }
+            Spots.push(spots[i])
         }
-        Spots.push(spots[i])
-} else {
-    spots[i] = {
-        id: spots[i].id, ownerId: spots[i].ownerId,
-    address: spots[i].address, city: spots[i].city,
-    state: spots[i].state, country: spots[i].country,
-    lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
-    description: spots[i].description, price: spots[i].price,
-    createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
-    avgRating: spots[i].dataValues.avgRating,
-    // previewImage: spots[i].Images[0].url
     }
-    Spots.push(spots[i])
-}
-}
-    // Spots = spots.map(spot => places = {
-    //     id: spot.id, ownerId: spot.ownerId,
-    //     address: spot.address, city: spot.city,
-    //     state: spot.state, country: spot.country,
-    //     lat: spot.lat, lng: spot.lng, name: spot.name,
-    //     description: spot.description, price: spot.price,
-    //     createAt: spot.createdAt, updateAt: spot.updatedAt,
-    //     avgRating: spot.dataValues.avgRating,
-    //     previewImage: spot.Images[0].url
-    // })
-
-
-
     res.json(Spots)
-
-    // const avgStars = await Review.findAll({
-    //     attributes: {
-    //         include: [
-    //             [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
-    //         ],
-    //         exclude: ['id', 'userId', 'spotId', 'review', 'stars', 'createdAt', 'updatedAt']
-    //     }, group: ['spotId']
-    // })
-
-    // res.json(spots[0])
-//  for (i =0 ; i <spots.length; i++){
-//     if (spots[i].previewImage.length === 0) {
-//         spots[i].previewImage[0]={"url" :" "}
-//      }
-//     }
-
-//    let allSpots = spots.map(spot => places = {
-
-//             id: spot.id, ownerId: spot.ownerId,
-//             address: spot.address, city: spot.city,
-//             state: spot.state, country: spot.country,
-//             lat: spot.lat, lng: spot.lng, name: spot.name,
-//             description: spot.description, price: spot.price,
-//             createAt: spot.createdAt, updateAt: spot.updatedAt,
-//             avgRating: avgStars[0].dataValues.avgRating,
-//             // previewImage: spot.previewImage[0].url
-        
-//     })
-//     res.json(allSpots)
 })
 
 // Get all Spots owned by the Current User(55:28)
 router.get('/current', requireAuth, async (req, res) => {
     const { user } = req;
-    const Spots = await Spot.findAll({
+    const spots = await Spot.findAll({
         where: { ownerId: user.id },
-        // include: {model:Image, where : {spotId: user.Id}},
         attributes: {
-                include: [
-                        [sequelize.fn('AVG', sequelize.col("Reviews.stars")), "avgRating"]
-                    ]
-                },
+            include: [
+                [sequelize.fn('AVG', sequelize.col("Reviews.stars")), "avgRating"]
+            ]
+        },
         include: [
-            { model: Image,  attributes: ['url'] },
+            { model: Image, attributes: ['url'] },
             { model: Review, attributes: [] }
-        ], group: ['Spot.id','Images.id']
+        ], group: ['Spot.id', 'Images.id']
     })
-    // res.json(Spots)
-    // res.json(Spots[0].Images.length)
-    for (i=0; i<Spots.length; i++){
-        if (Spots[i].Images.length === 0) {
-            Spots[i].Images = {"url":"no image "}
+   
+    let Spots = [];
+
+    for (i = 0; i < spots.length; i++) {
+        if (spots[i].Images[0]) {
+            spots[i] = {
+                id: spots[i].id, ownerId: spots[i].ownerId,
+                address: spots[i].address, city: spots[i].city,
+                state: spots[i].state, country: spots[i].country,
+                lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
+                description: spots[i].description, price: spots[i].price,
+                createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
+                avgRating: spots[i].dataValues.avgRating,
+                previewImage: spots[i].Images[0].url
+            }
+            Spots.push(spots[i])
+        } else {
+            spots[i] = {
+                id: spots[i].id, ownerId: spots[i].ownerId,
+                address: spots[i].address, city: spots[i].city,
+                state: spots[i].state, country: spots[i].country,
+                lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
+                description: spots[i].description, price: spots[i].price,
+                createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
+                avgRating: spots[i].dataValues.avgRating,
+                // previewImage: spots[i].Images[0].url
+            }
+            Spots.push(spots[i])
         }
     }
-    res.json(Spots)
-
-    const spots = Spots.map(spot => places = {
-        id: spot.id, ownerId: spot.ownerId,
-        address: spot.address, city: spot.city,
-        state: spot.state, country: spot.country,
-        lat: spot.lat, lng: spot.lng, name: spot.name,
-        description: spot.description, price: spot.price,
-        createAt: spot.createdAt, updateAt: spot.updatedAt,
-        avgRating: spot.dataValues.avgRating,
-        previewImage: spot.Images[0].url
-    })
-    res.json({ Spots: spots })
+    res.json({ Spots })
     // res.json(Spots)
-
+})
     // let avgStars = [];
     // for (i = 0; i < Spots.length; i++) {
     //     const revAvg = await Review.findAll({
@@ -232,18 +199,18 @@ router.get('/current', requireAuth, async (req, res) => {
     //     images.push(image[0])
     //     // if (image === undefined) images.push({"url":"no image"})
     // }
-//   res.json(Spots)
-   
+    //   res.json(Spots)
+
 
     // res.json(images[0].url)
 
     // for (i = 0; i < spots.length; i++) {
     //     spots[i].avgRating = avgStars[i].dataValues.avgRating;
-        // spots[i].previewImage = images[i].url;
+    // spots[i].previewImage = images[i].url;
     // }
 
-   
-})
+
+// })
 
 // Add Query Filters to Get All Spots
 router.get('/', validatePage, validatePrice, async (req, res, next) => {
@@ -307,7 +274,7 @@ router.get('/:spotId', async (req, res) => {
                 [sequelize.fn('COUNT', sequelize.col("review")), "numReviews"],
                 [sequelize.fn('AVG', sequelize.col("stars")), "avgRating"]
             ]
-        }, group: ['Review.id' ]
+        }, group: ['Review.id']
     })
 
     const image = await Image.findOne({
