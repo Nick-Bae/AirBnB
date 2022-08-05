@@ -138,7 +138,7 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
                 lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
                 description: spots[i].description, price: spots[i].price,
                 createdAt: spots[i].createdAt, updatedAt: spots[i].updatedAt,
-                avgRating: Number(avgRating[i].dataValues.avgRating).toFixed(1),
+                avgRating: Number(Number(avgRating[i].dataValues.avgRating).toFixed(1)),
                 previewImage: spots[i].Images[0].url
             }
             Spots.push(spots[i])
