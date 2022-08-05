@@ -105,6 +105,21 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
         ...pagination
     })
 
+    const avgRating = await Spot.findAll({
+        attributes: {
+            include: [
+                [
+                    sequelize.fn('AVG', sequelize.col('Reviews.stars')), "avgRating"
+                ],
+            ]
+        },
+        include: [
+                 { model: Review, attributes: [] },
+        ],
+        group: ['Spot.id'],
+    })
+    // res.json(avgRating)
+
     let Spots = [];
 
     for (i = 0; i < spots.length; i++) {
@@ -116,7 +131,7 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
                 lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
                 description: spots[i].description, price: spots[i].price,
                 createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
-                avgRating: spots[i].dataValues.avgRating,
+                avgRating: avgRating[i].dataValues.avgRating,
                 previewImage: spots[i].Images[0].url
             }
             Spots.push(spots[i])
@@ -128,7 +143,7 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
                 lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
                 description: spots[i].description, price: spots[i].price,
                 createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
-                avgRating: spots[i].dataValues.avgRating,
+                avgRating: avgRating[i].dataValues.avgRating,
                 // previewImage: spots[i].Images[0].url
             }
             Spots.push(spots[i])

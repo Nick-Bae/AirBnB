@@ -20,11 +20,6 @@ const validateSignup = [
     // .isLength({ min: 4 })
     // .withMessage('Please provide a username with at least 4 characters.'),
     .withMessage('Username is required'),
-  // check('username')
-  //   .not()
-  //   .isEmail()
-  //   .withMessage('Username is required.'),
-
   check('firstName')
     .exists({ checkFalsy: true })
     .withMessage('First Name is required'),
@@ -60,7 +55,8 @@ const validateSignup2 = async (req, res, next) => {
   }
   next();
 }
-// Sign Up a User
+
+// ================  Sign Up a User   ====================
 router.post(
   '/',
   validateSignup, validateSignup2,
