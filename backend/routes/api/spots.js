@@ -150,7 +150,7 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
                 lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
                 description: spots[i].description, price: spots[i].price,
                 createdAt: spots[i].createdAt, updatedAt: spots[i].updatedAt,
-                avgRating: Number(avgRating[i].dataValues.avgRating).toFixed(1),
+                avgRating: Number(Number(avgRating[i].dataValues.avgRating).toFixed(1)),
                 // previewImage: spots[i].Images[0].url
             }
             Spots.push(spots[i])
@@ -202,7 +202,7 @@ router.get('/', async (req, res) => {
                 lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
                 description: spots[i].description, price: spots[i].price,
                 createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
-                avgRating: spots[i].dataValues.avgRating,
+                avgRating: Number(Number(spots[i].dataValues.avgRating).toFixed(1)),
                 previewImage: spots[i].Images[0].url
             }
             Spots.push(spots[i])
@@ -214,7 +214,7 @@ router.get('/', async (req, res) => {
                 lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
                 description: spots[i].description, price: spots[i].price,
                 createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
-                avgRating: spots[i].dataValues.avgRating,
+                avgRating: Number(Number(spots[i].dataValues.avgRating).toFixed(1)),
                 // previewImage: spots[i].Images[0].url
             }
             Spots.push(spots[i])
@@ -250,7 +250,7 @@ router.get('/current', requireAuth, async (req, res) => {
                 lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
                 description: spots[i].description, price: spots[i].price,
                 createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
-                avgRating: spots[i].dataValues.avgRating,
+                avgRating: Number(Number(spots[i].dataValues.avgRating).toFixed(1)),
                 previewImage: spots[i].Images[0].url
             }
             Spots.push(spots[i])
@@ -262,7 +262,7 @@ router.get('/current', requireAuth, async (req, res) => {
                 lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
                 description: spots[i].description, price: spots[i].price,
                 createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
-                avgRating: spots[i].dataValues.avgRating,
+                avgRating: Number(Number(spots[i].dataValues.avgRating).toFixed(1)),
                 // previewImage: spots[i].Images[0].url
             }
             Spots.push(spots[i])
@@ -314,7 +314,7 @@ router.get('/:spotId', async (req, res) => {
         description: detail.description, price: detail.price,
         createAt: detail.createdAt, updateAt: detail.updatedAt,
         numReviews: revAvg[0].dataValues.numReviews,
-        avgRating: revAvg[0].dataValues.avgRating,
+        avgRating: Number(Number(revAvg[0].dataValues.avgRating.toFixed(1))),
         Images: detail = [{ id: image.id, imageableId: image.spotId, url: image.url }],
         Owner: detail = owner,
     }
