@@ -314,7 +314,7 @@ router.get('/:spotId', async (req, res) => {
         description: detail.description, price: detail.price,
         createAt: detail.createdAt, updateAt: detail.updatedAt,
         numReviews: revAvg[0].dataValues.numReviews,
-        avgRating: Number(Number(revAvg[0].dataValues.avgRating.toFixed(1))),
+        avgRating: Number(Number(revAvg[0].dataValues.avgRating).toFixed(1)),
         Images: detail = [{ id: image.id, imageableId: image.spotId, url: image.url }],
         Owner: detail = owner,
     }
