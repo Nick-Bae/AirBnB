@@ -81,6 +81,7 @@ router.get('/spot/:spotId/bookings', requireAuth, async (req, res) => {
 
 //==============Edit a Booking=========================
 router.put('/:bookingId', async (req, res) => {
+    const {user}=req;
     const { startDate, endDate } = req.body
     const editBooking = await Booking.findByPk(req.params.bookingId)
     let today = new Date().toISOString().slice(0, 10)
@@ -91,7 +92,10 @@ router.put('/:bookingId', async (req, res) => {
             "statusCode": 404
         })
     }
-
+ if (user.id !== editBooking.id ) {
+    res.json("No permission")
+ }
+// res.json(editBooking.id)
     const reservInSpot = await Booking.findAll({
         where: {
             spotId: editBooking.spotId,
