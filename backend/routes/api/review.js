@@ -10,14 +10,6 @@ const validateReview = [
     check('review')
         .exists({ checkFalsy: true })
         .withMessage('review text is required'),
-    check('stars').custom((value)=> {
-        if (value >5 || value<1) {
-          throw new Error('Stars must be an integer from 1 to 5');
-        }
-    }),
-    // check('userId')
-    //     .exists({checkFalsy:true})
-    //     .withMessage('User already has a review for this spot'),
     handleValidationErrors
 ]
 
