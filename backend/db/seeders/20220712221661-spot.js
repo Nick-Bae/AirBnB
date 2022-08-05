@@ -20,6 +20,8 @@ module.exports = {
         name: "App Academy",
         description: "Place where web developers are created",
         price: 123,
+        createdAt:"2021-11-19 20:39:36",
+        updatedAt: "2021-11-19 20:39:36"
       },
       {ownerId: 1,
         address: "123-1 Disney Lane",
@@ -30,8 +32,12 @@ module.exports = {
         lng: -122.4730327,
         name: "App Academy1",
         description: "Place where web developers are created",
-        price: 123,},
-      {ownerId: 2,
+        price: 123,
+        createdAt:"2021-11-19 20:39:36",
+        updatedAt: "2021-11-19 20:39:36"
+      },
+      {
+        ownerId: 2,
         address: "123-2 Disney Lane",
         city: "San Francisco",
         state: "California",
@@ -40,7 +46,10 @@ module.exports = {
         lng: -122.4730327,
         name: "App Academy2",
         description: "Place where web developers are created",
-        price: 123,}
+        price: 123,
+        createdAt:"2021-11-19 20:39:36",
+        updatedAt: "2021-11-19 20:39:36"
+      },
       // {
       //   ownerId: 3,
       //   name: 'Windy City',

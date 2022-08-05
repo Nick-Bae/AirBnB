@@ -33,7 +33,6 @@ router.get('/current', requireAuth, async (req, res) => {
             { model: Spot, 
                 attributes: 
                 { exclude: ["description","createdAt", "updatedAt"] } },
-            // {model:Image, attributes:['id','imageabledId','url']}
             {model:Image, attributes:['id',['spotId','imageableId'],'url']}
         ]
     })

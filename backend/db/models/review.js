@@ -1,4 +1,6 @@
 'use strict';
+// const moment = require('moment')
+
 const {
   Model
 } = require('sequelize');
@@ -29,6 +31,18 @@ module.exports = (sequelize, DataTypes) => {
       type:DataTypes.DECIMAL(1,1),
       defaultValue: 0,
     },
+  //   createdAt: {
+  //     type: DataTypes.DATE,                  
+  //   get() {
+  //         return moment(this.getDataValue('createdAt')).format('YYYY-MM-DD hh:mm:ss');
+  //     }
+  // },
+  // updatedAt: {
+  //     type: DataTypes.DATE,
+  //     get() {
+  //         return moment(this.getDataValue('updatedAt')).format('YYYY-MM-DD hh:mm:ss');
+  //     }
+  // }
   }, {
     sequelize,
     modelName: 'Review',

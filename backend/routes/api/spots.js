@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment')
 
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
 const { User, Spot, Review, sequelize, Image, Booking } = require('../../db/models');
@@ -101,7 +102,13 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
                 model: Image, attributes: ['url'],
             },
         ],
-        
+        // attributes: {
+        //     include: [
+        //      [
+        //         sequelize.fn( "DATE_FORMAT", sequelize.col("createdAt"), "%d-%m-%Y %H:%i:%s"),
+        //      ],
+        //      ],
+        //   },
         ...pagination
     })
 
@@ -130,8 +137,8 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
                 state: spots[i].state, country: spots[i].country,
                 lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
                 description: spots[i].description, price: spots[i].price,
-                createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
-                avgRating: avgRating[i].dataValues.avgRating,
+                createdAt: spots[i].createdAt, updatedAt: spots[i].updatedAt,
+                avgRating: Number((avgRating[i].dataValues.avgRating).toFixed(1)),
                 previewImage: spots[i].Images[0].url
             }
             Spots.push(spots[i])
@@ -142,8 +149,8 @@ router.get('/', validatePage, validatePrice, async (req, res, next) => {
                 state: spots[i].state, country: spots[i].country,
                 lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
                 description: spots[i].description, price: spots[i].price,
-                createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
-                avgRating: avgRating[i].dataValues.avgRating,
+                createdAt: spots[i].createdAt, updatedAt: spots[i].updatedAt,
+                avgRating: Number((avgRating[i].dataValues.avgRating).toFixed(1)),
                 // previewImage: spots[i].Images[0].url
             }
             Spots.push(spots[i])
@@ -318,9 +325,12 @@ router.get('/:spotId', async (req, res) => {
 //===============Create a Spot================
 router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
     const { user } = req;
-
+// const {createdAt}= req
+function getDateWithoutTime(date) {
+    return require('moment')(date).format('YYYY-MM-DD');
+}
     const { address, city, state, country,
-        lat, lng, name, description, price } = req.body
+        lat, lng, name, description, price,createdAt } = req.body
     const newSpot = await Spot.create({
         ownerId: user.id,
         address,
@@ -331,9 +341,30 @@ router.post('/', requireAuth, validateCreateSpot, async (req, res) => {
         lng,
         name,
         description,
-        price
+        price,
+        // date: getDateWithoutTime(createdAt)
+        createdAt
+        //createdAt: moment(req.getDataValue('updatedAt')).format('YYYY-MM-DD hh:mm:ss'),
+      //  updatedAt
+    //    createdAt: createdAt
     })
-    res.status(201).json(newSpot)
+    const newSpot2 = {
+        id: newSpot.id,
+        ownerId: user.id,
+        address: newSpot.address,
+        city: newSpot.ciy,
+        state: newSpot.state,
+        country: newSpot.country,
+        lat: newSpot.lat,
+        lng: newSpot.lng,
+        name: newSpot.name,
+        description: newSpot.description,
+        price: newSpot.price,
+        createdAt: newSpot.createdAt,
+        updatedAt: newSpot.updatedAt
+    }
+    // res.status(201).json(newSpot)
+    res.status(201).json(newSpot2)
 })
 
 //============== Add an Image to a Spot based on the Spot's id

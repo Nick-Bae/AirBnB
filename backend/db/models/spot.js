@@ -1,14 +1,17 @@
 'use strict';
+const moment = require('moment')
 const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
+  
   class Spot extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
+    
     static associate(models) {
       Spot.belongsTo(models.User,  {foreignKey:'ownerId'})
       Spot.hasMany(models.Booking, {foreignKey:'spotId'})
@@ -65,6 +68,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull:false
     },
+    createdAt: {
+      type: DataTypes.DATE,                  
+    get() {
+          return moment(this.getDataValue('createdAt')).format('YYYY-MM-DD hh:mm:ss');
+      }
+  },
+  updatedAt: {
+      type: DataTypes.DATE,
+      get() {
+          return moment(this.getDataValue('updatedAt')).format('YYYY-MM-DD hh:mm:ss');
+      }
+  }
   }, {
     sequelize,
     modelName: 'Spot',
