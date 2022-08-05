@@ -74,6 +74,80 @@ const validatePrice = (req, res, next) => {
     next()
 };
 
+//================ Add Query Filters to Get All Spots==========================
+router.get('/', validatePage, validatePrice, async (req, res, next) => {
+    //page
+
+    let pagination = {};
+    let { page, size } = req.query;
+    console.log(req.query)
+    page = page === undefined ? 1 : parseInt(page);
+    size = size === undefined ? 20 : parseInt(size);
+    if (size >= 1 && page >= 1) {
+        pagination.limit = size
+        pagination.offset = size * (page - 1)
+        //    } else if (size<0){
+        //     // res.json({"size": "Size must be greater than or equal to 0" })
+        //     res.body.errors.size = "Size must be greater than or equal to 0"
+        //     res.json(res.body.errors)
+        // } else if (page<0){
+
+    }
+    
+
+    const spots = await Spot.findAll({
+        include: [
+            {
+                model: Image, attributes: ['url'],
+            },
+        ],
+        
+        ...pagination
+    })
+
+    let Spots = [];
+
+    for (i = 0; i < spots.length; i++) {
+        if (spots[i].Images[0]) {
+            spots[i] = {
+                id: spots[i].id, ownerId: spots[i].ownerId,
+                address: spots[i].address, city: spots[i].city,
+                state: spots[i].state, country: spots[i].country,
+                lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
+                description: spots[i].description, price: spots[i].price,
+                createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
+                avgRating: spots[i].dataValues.avgRating,
+                previewImage: spots[i].Images[0].url
+            }
+            Spots.push(spots[i])
+        } else {
+            spots[i] = {
+                id: spots[i].id, ownerId: spots[i].ownerId,
+                address: spots[i].address, city: spots[i].city,
+                state: spots[i].state, country: spots[i].country,
+                lat: spots[i].lat, lng: spots[i].lng, name: spots[i].name,
+                description: spots[i].description, price: spots[i].price,
+                createAt: spots[i].createdAt, updateAt: spots[i].updatedAt,
+                avgRating: spots[i].dataValues.avgRating,
+                // previewImage: spots[i].Images[0].url
+            }
+            Spots.push(spots[i])
+        }
+    }
+
+    //minPrice, maxPrice
+    if (req.query.minPrice) {
+        Spots = Spots.filter(spot => spot.price >= parseInt(req.query.minPrice));
+    }
+
+    if (req.query.maxPrice) {
+        Spots = Spots.filter(spot => spot.price <= parseInt(req.query.maxPrice))
+    }
+
+    res.json({ Spots, page, size })
+
+})
+
 // =====================Get all Spots=========================
 router.get('/', async (req, res) => {
 
@@ -177,48 +251,7 @@ router.get('/current', requireAuth, async (req, res) => {
 })
 // 
 
-//================ Add Query Filters to Get All Spots==========================
-router.get('/', validatePage, validatePrice, async (req, res, next) => {
-    //page
 
-    let pagination = {};
-    let { page, size } = req.query;
-    console.log(req.query)
-    page = page === undefined ? 1 : parseInt(page);
-    size = size === undefined ? 3 : parseInt(size);
-    if (size >= 1 && page >= 1) {
-        pagination.limit = size
-        pagination.offset = size * (page - 1)
-        //    } else if (size<0){
-        //     // res.json({"size": "Size must be greater than or equal to 0" })
-        //     res.body.errors.size = "Size must be greater than or equal to 0"
-        //     res.json(res.body.errors)
-        // } else if (page<0){
-
-    }
-
-    let spots = await Spot.findAll({
-
-        ...pagination
-    })
-
-    let query = {
-        where: {},
-        include: []
-    };
-
-    //minPrice, maxPrice
-    if (req.query.minPrice) {
-        spots = spots.filter(spot => spot.price >= parseInt(req.query.minPrice));
-    }
-
-    if (req.query.maxPrice) {
-        spots = spots.filter(spot => spot.price <= parseInt(req.query.maxPrice))
-    }
-
-    res.json({ spots, page, size })
-
-})
 
 //=================Get details of a Spot from an id (56:23)==============
 router.get('/:spotId', async (req, res) => {
@@ -303,8 +336,9 @@ router.post('/:spotId/images', requireAuth, async (req, res) => {
     } else {
         const newImage = await Image.create({
             // imageableId,
+            url,
             spotId: req.params.spotId,
-            url
+            userId: user.id
         })
         res.json({
             id: newImage.id,
@@ -413,7 +447,7 @@ router.post('/:spotId/reviews', requireAuth, restoreUser, validateReview, async 
     })
     const spot = await Spot.findByPk(req.params.spotId)
 
-    if (isUserReview) {
+    if (isUserReview) {add
         res.status(403).json({
             "message": "User already has a review for this spot",
             "statusCode": 403
@@ -484,6 +518,7 @@ const validateBookingDate = (req, res, next) => {
     }
     next()
 }
+
 // =============Create a Booking from a Spot based on the Spot's id=============
 router.post('/:spotId/bookings', requireAuth, async (req, res) => {
     const { user } = req;
