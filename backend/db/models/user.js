@@ -70,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          len: [4, 30],
+          len: [2, 30],
           isNotEmail(value) {
             if (Validator.isEmail(value)) {
               throw new Error("Cannot be an email.");
@@ -83,23 +83,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           len: [3, 256],
-          // isExist(value){
-          //   const email = User.findOne({
-          //     where: {email: value}
-          //   })
-          //   if(email === value){
-          //     const error = new Error("Signup failed")
-          //     error.code = 403
-          //     error.message = "User already exists"
-          //     return error
-          //     throw new Error("alreay exist")
-          //   }
-          // },
         }
-        // unique: {
-        //   arg: true,
-        //     msg:'User already exists'
-        // }
       },
       username: DataTypes.STRING,
       hashedPassword: {
