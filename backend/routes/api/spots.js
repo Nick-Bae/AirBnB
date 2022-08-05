@@ -480,8 +480,9 @@ const validateReview = (req, res, next)=>{
             "statusCode": 400,
             error
         })
-        next()
+        
     }
+    next()
 }
 
 //==========Create a Review for a Spot based on the Spot's id=====================
@@ -496,6 +497,7 @@ router.post('/:spotId/reviews', requireAuth, restoreUser, validateReview, async 
     })
     const spot = await Spot.findByPk(req.params.spotId)
 
+    //res.json(isUserReview)
     if (isUserReview) {
         res.status(403).json({
             "message": "User already has a review for this spot",
