@@ -401,8 +401,6 @@ router.delete('/:spotId', restoreUser, async (req, res) => {
             "statusCode": 200
         })
     }
-    // }catch (err){
-    // }
 })
 
 
@@ -425,15 +423,20 @@ router.get('/:spotId/reviews', requireAuth, async (req, res) => {
     }
 })
 
-const validateReview = [
-    check('review')
-        .exists({ checkFalsy: true })
-        .withMessage('comment text is required'),
-    check('stars')
-        .exists({ checkFalsy: true })
-        .withMessage('Stars must be an integer from 1 to 5'),
-    handleValidationErrors
-]
+
+const validateReview = (req, res, next)=>{
+    const { stars } = req.body
+    if (stars < 1 || stars > 5) {
+        const error = new Error;
+        error.page = "Stars must be an integer from 1 to 5"
+        res.status(400).json({
+            "message": "Validation Error",
+            "statusCode": 400,
+            error
+        })
+        next()
+    }
+}
 
 //==========Create a Review for a Spot based on the Spot's id=====================
 router.post('/:spotId/reviews', requireAuth, restoreUser, validateReview, async (req, res) => {
@@ -447,7 +450,7 @@ router.post('/:spotId/reviews', requireAuth, restoreUser, validateReview, async 
     })
     const spot = await Spot.findByPk(req.params.spotId)
 
-    if (isUserReview) {add
+    if (isUserReview) {
         res.status(403).json({
             "message": "User already has a review for this spot",
             "statusCode": 403
