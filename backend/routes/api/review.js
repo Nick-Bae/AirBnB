@@ -149,7 +149,7 @@ router.delete('/:reviewId', requireAuth, async (req, res) => {
             "statusCode": 200
         })
     } else {
-        res.status(401).json("Unauthorized User")
+        res.status(401).json("No permission")
     }
 })
 
